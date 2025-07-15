@@ -3,21 +3,33 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { HashearSenhaPipe } from '../../recursos/pipes/hashear-senha.pipe';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
 import { UsuarioService } from './usuario.service';
+import { Public } from '../auth/decorators/public.decorator';
+import { UsuarioEntity } from './usuario.entity';
 
-@Controller('/usuarios')
+@ApiTags('usuario')
+@Controller('/usuario')
 export class UsuarioController {
   constructor(private usuarioService: UsuarioService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Cria um novo usuário' })
+  @ApiBody({ type: CriaUsuarioDTO })
+  @ApiCreatedResponse({
+    description: 'Usuário criado com sucesso.',
+    type: UsuarioEntity,
+  })
   async criaUsuario(
     @Body() { senha, ...dadosDoUsuario }: CriaUsuarioDTO,
     @Body('senha', HashearSenhaPipe) senhaHasheada: string,
@@ -33,7 +45,13 @@ export class UsuarioController {
     };
   }
 
+  @Public()
   @Get()
+  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiOkResponse({
+    description: 'Usuários obtidos com sucesso.',
+    type: [UsuarioEntity],
+  })
   async listUsuarios() {
     const usuariosSalvos = await this.usuarioService.listUsuarios();
 
@@ -44,6 +62,13 @@ export class UsuarioController {
   }
 
   @Put('/:id')
+  @ApiOperation({ summary: 'Atualiza um usuário pelo ID' })
+  @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
+  @ApiBody({ type: AtualizaUsuarioDTO })
+  @ApiOkResponse({
+    description: 'Usuário atualizado com sucesso.',
+    type: UsuarioEntity,
+  })
   async atualizaUsuario(
     @Param('id') id: string,
     @Body() novosDados: AtualizaUsuarioDTO,
@@ -60,6 +85,12 @@ export class UsuarioController {
   }
 
   @Delete('/:id')
+  @ApiOperation({ summary: 'Remove um usuário pelo ID' })
+  @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
+  @ApiOkResponse({
+    description: 'Usuário removido com sucesso.',
+    type: UsuarioEntity,
+  })
   async removeUsuario(@Param('id') id: string) {
     const usuarioRemovido = await this.usuarioService.deletaUsuario(id);
 

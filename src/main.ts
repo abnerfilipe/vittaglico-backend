@@ -3,6 +3,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from './modules/auth/auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -20,6 +21,8 @@ async function bootstrap() {
     ui: true,
     jsonDocumentUrl: 'swagger/json',
   });
+  const authGuard = app.get(AuthGuard);
+  app.useGlobalGuards(authGuard);
   // Aqui você pode configurar o FastifyAdapter se precisar (opcional)
   // Por exemplo, para habilitar CORS:
   // app.enableCors();
