@@ -1,0 +1,12 @@
+{
+  "editor.allowVariableFonts": true,
+  "files.watcherExclude": {
+    "**/dist": true,
+    "**/node_modules": true
+  },
+  "files.exclude": {
+    "**/.DS_store": true,
+    "**/dist": true,
+    "**/node_modules": true
+  }
+}
