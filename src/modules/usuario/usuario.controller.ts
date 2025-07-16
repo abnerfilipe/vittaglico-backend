@@ -122,7 +122,6 @@ export class UsuarioController {
     };
   }
 
-  @Public()
   @Get()
   @ApiOperation({ 
     summary: 'Lista todos os usuários',
