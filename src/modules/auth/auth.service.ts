@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 
 export interface UsuarioPayload {
   sub: string;
-  username: string;
   email: string;
 }
 
@@ -19,9 +18,9 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async signIn(username: string, pass: string) {
-    const user = await this.usuarioService.buscaPorUsername(username);
-  
+  async signIn(email: string, pass: string) {
+    const user = await this.usuarioService.buscaPorEmail(email);
+
     const usuarioFoiAutenticado = await bcrypt.compare(
       pass,
       user.senha,
@@ -33,7 +32,6 @@ export class AuthService {
     
     const payload: UsuarioPayload = { 
       email: user.email, 
-      username: user.username, 
       sub: user.id 
     };
     

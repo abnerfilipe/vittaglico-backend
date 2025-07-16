@@ -20,12 +20,6 @@ export class ListaUsuarioDTO {
   readonly email: string;
 
   @ApiProperty({
-    description: 'Nome de usuário para login',
-    example: 'joao123'
-  })
-  readonly username: string;
-
-  @ApiProperty({
     description: 'Data de nascimento do usuário no formato YYYY-MM-DD',
     example: '1990-01-01'
   })
@@ -53,7 +47,6 @@ export class ListaUsuarioDTO {
     id: string,
     nome: string,
     email: string,
-    username: string,
     dataDeNascimento: string,
     telefone: string,
     createdAt?: string,
@@ -62,7 +55,6 @@ export class ListaUsuarioDTO {
     this.id = id;
     this.nome = nome;
     this.email = email;
-    this.username = username;
     this.dataDeNascimento = dataDeNascimento;
     this.telefone = telefone;
     this.createdAt = createdAt;

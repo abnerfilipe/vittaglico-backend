@@ -5,7 +5,6 @@ import { UsuarioEntity } from './usuario.entity';
 import { UsuarioService } from './usuario.service';
 import { EmailEhUnicoValidator } from './validacao/email-eh-unico.validator';
 import { TelefoneEhUnicoValidator } from './validacao/telefone-eh-unico.validator';
-import { UsernameEhUnicoValidator } from './validacao/username-eh-unico.validator';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { UsernameEhUnicoValidator } from './validacao/username-eh-unico.validato
     UsuarioService, 
     EmailEhUnicoValidator,
     TelefoneEhUnicoValidator,
-    UsernameEhUnicoValidator,
   ],
   exports: [UsuarioService],
 })

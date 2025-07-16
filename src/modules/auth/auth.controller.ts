@@ -44,7 +44,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ 
     summary: 'Realiza login e retorna o token JWT', 
-    description: 'Autentica um usuário com username e senha, retornando um token JWT válido que deve ser usado para autenticar requisições subsequentes.'
+    description: 'Autentica um usuário com email e senha, retornando um token JWT válido que deve ser usado para autenticar requisições subsequentes.'
   })
   @ApiBody({ 
     type: LoginDTO,
@@ -66,8 +66,6 @@ export class AuthController {
       example: {
         statusCode: 400,
         message: [
-          'O username não pode ser vazio',
-          'O username deve ser uma string',
           'A senha não pode ser vazia',
           'A senha deve ser uma string'
         ],
@@ -85,7 +83,7 @@ export class AuthController {
     }
   })
   signIn(@Body() signInDto: LoginDTO) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+    return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @Get('profile')
@@ -99,7 +97,6 @@ export class AuthController {
     schema: {
       example: {
         sub: 'uuid-do-usuario',
-        username: 'usuario1',
         email: 'usuario@email.com'
       }
     }
@@ -114,7 +111,7 @@ export class AuthController {
     }
   })
   getProfile(@Request() req) {
-    return this.usuarioService.buscaPorUsername(req.user.username);
+    return this.usuarioService.buscaPorEmail(req.user.email);
   }
 
   @Post('logout')

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, MinLength, IsDateString, IsString, Length } from 'class-validator';
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
 import { EmailEhUnico } from '../validacao/email-eh-unico.validator';
-import { UsernameEhUnico } from '../validacao/username-eh-unico.validator';
 import { TelefoneEhUnico } from '../validacao/telefone-eh-unico.validator';
+import { Transform } from 'class-transformer';
 
 export class CriaUsuarioDTO {
   @ApiProperty({
@@ -20,9 +20,6 @@ export class CriaUsuarioDTO {
     minLength: 4,
     maxLength: 15
   })
-  @IsNotEmpty({ message: 'O username não pode ser vazio' })
-  @UsernameEhUnico({ message: 'Já existe um usuário com este username' })
-  username: string;
 
   @ApiProperty({
     description: 'Endereço de email único do usuário',
@@ -47,11 +44,12 @@ export class CriaUsuarioDTO {
   @ApiProperty({
     description: 'Número de telefone do usuário (entre 10 e 11 caracteres)',
     example: '11123456789',
-    required: true,
+    required: false,
     minLength: 10,
     maxLength: 11
   })
-  @IsNotEmpty({ message: 'O telefone não pode ser vazio' })
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsString()
   @Length(10, 11, { message: 'O telefone deve ter entre 10 e 11 caracteres' })
   @TelefoneEhUnico({ message: 'Já existe um usuário com este telefone' })
@@ -60,9 +58,11 @@ export class CriaUsuarioDTO {
   @ApiProperty({
     description: 'Data de nascimento no formato YYYY-MM-DD',
     example: '1990-01-01',
-    required: true,
+    required: false,
     format: 'date'
   })
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (YYYY-MM-DD)' })
   dataDeNascimento: string;
 }

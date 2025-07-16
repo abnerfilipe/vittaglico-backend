@@ -16,9 +16,6 @@ export class UsuarioEntity {
   @Column({ name: 'nome', length: 100, nullable: false })
   nome: string;
 
-  @Column({ name: 'username', length: 15, nullable: false, unique: true })
-  username: string;
-
   @Column({ name: 'email', length: 70, nullable: false, unique: true })
   email: string;
 
@@ -26,10 +23,10 @@ export class UsuarioEntity {
   @Column({ name: 'senha', length: 255, nullable: false })
   senha: string;
 
-  @Column({ name: 'telefone', length: 20, nullable: false })
+  @Column({ name: 'telefone', length: 20, nullable: true })
   telefone: string;
 
-  @Column({ name: 'data_de_nascimento',type: Date, nullable: false })
+  @Column({ name: 'data_de_nascimento',type: Date, nullable: true })
   dataDeNascimento: string;
 
   @CreateDateColumn({ name: 'created_at' })

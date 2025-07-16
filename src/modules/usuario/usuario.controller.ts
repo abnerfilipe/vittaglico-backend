@@ -72,7 +72,6 @@ export class UsuarioController {
           id: 'uuid',
           nome: 'João',
           email: 'joao@email.com',
-          username: 'joao123',
           dataDeNascimento: '1990-01-01',
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
@@ -88,7 +87,6 @@ export class UsuarioController {
         statusCode: 400,
         message: [
           'O nome não pode ser vazio',
-          'Já existe um usuário com este username',
           'O e-mail informado é inválido',
           'A senha precisa ter pelo menos 6 caracteres',
           'O telefone deve ter entre 8 e 20 caracteres',
@@ -113,7 +111,6 @@ export class UsuarioController {
         usuarioCriado.id,
         usuarioCriado.nome,
         usuarioCriado.email,
-        usuarioCriado.username,
         usuarioCriado.dataDeNascimento,
         usuarioCriado.telefone,
         usuarioCriado.createdAt,
@@ -193,7 +190,6 @@ export class UsuarioController {
           id: 'uuid',
           nome: 'João',
           email: 'joao@email.com',
-          username: 'joao123',
           dataDeNascimento: '1990-01-01',
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
@@ -218,8 +214,6 @@ export class UsuarioController {
       example: {
         statusCode: 400,
         message: [
-          'O nome não pode ser vazio',
-          'Já existe um usuário com este username',
           'O e-mail informado é inválido'
         ],
         error: 'Bad Request'
@@ -263,7 +257,6 @@ export class UsuarioController {
           id: 'uuid',
           nome: 'João',
           email: 'joao@email.com',
-          username: 'joao123',
           dataDeNascimento: '1990-01-01',
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
@@ -311,7 +304,6 @@ export class UsuarioController {
         id: 'uuid',
         nome: 'João',
         email: 'joao@email.com',
-        username: 'joao123',
         dataDeNascimento: '1990-01-01',
         telefone: '11999999999',
         createdAt: '2025-07-15T10:30:00Z',
@@ -336,7 +328,6 @@ export class UsuarioController {
       usuario.id,
       usuario.nome,
       usuario.email,
-      usuario.username,
       usuario.dataDeNascimento,
       usuario.telefone,
       usuario.createdAt,

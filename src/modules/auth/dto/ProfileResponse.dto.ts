@@ -8,12 +8,6 @@ export class ProfileResponseDTO {
   sub: string;
 
   @ApiProperty({
-    description: 'Nome de usuário',
-    example: 'usuario1'
-  })
-  username: string;
-
-  @ApiProperty({
     description: 'Email do usuário',
     example: 'usuario@email.com'
   })

@@ -1,9 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CriaUsuarioDTO } from './CriaUsuario.dto';
-import { IsOptional, IsNotEmpty, IsEmail, MinLength, IsDateString, IsString, Length } from 'class-validator';
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
 import { EmailEhUnico } from '../validacao/email-eh-unico.validator';
-import { UsernameEhUnico } from '../validacao/username-eh-unico.validator';
 import { TelefoneEhUnico } from '../validacao/telefone-eh-unico.validator';
+import { CriaUsuarioDTO } from './CriaUsuario.dto';
 
 export class AtualizaUsuarioDTO extends PartialType(CriaUsuarioDTO) {
   @ApiProperty({
@@ -22,10 +21,6 @@ export class AtualizaUsuarioDTO extends PartialType(CriaUsuarioDTO) {
     minLength: 4,
     maxLength: 15
   })
-  @IsOptional()
-  @IsNotEmpty({ message: 'O username não pode ser vazio' })
-  @UsernameEhUnico({ message: 'Já existe um usuário com este username' })
-  username?: string;
 
   @ApiProperty({
     description: 'Endereço de email único do usuário',
