@@ -9,7 +9,21 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiBearerAuth,
+  ApiExtraModels,
+  getSchemaPath,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { HashearSenhaPipe } from '../../recursos/pipes/hashear-senha.pipe';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
@@ -17,18 +31,73 @@ import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
 import { UsuarioService } from './usuario.service';
 import { Public } from '../auth/decorators/public.decorator';
 import { UsuarioEntity } from './usuario.entity';
+import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
+import { AtualizaUsuarioResponseDTO } from './dto/AtualizaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // Você precisará criar este DTO
 
 @ApiTags('usuario')
+@ApiExtraModels(
+  ListaUsuarioDTO, 
+  CriaUsuarioDTO, 
+  AtualizaUsuarioDTO, 
+  CriaUsuarioResponseDTO, 
+  ListaUsuariosResponseDTO, 
+  AtualizaUsuarioResponseDTO, 
+  RemoveUsuarioResponseDTO
+)
+@ApiBearerAuth('JWT-auth')
 @Controller('/usuario')
 export class UsuarioController {
   constructor(private usuarioService: UsuarioService) {}
 
+  @Public()
   @Post()
-  @ApiOperation({ summary: 'Cria um novo usuário' })
-  @ApiBody({ type: CriaUsuarioDTO })
+  @ApiOperation({ 
+    summary: 'Cria um novo usuário', 
+    description: 'Cria um novo usuário no sistema com os dados fornecidos. A senha é automaticamente hasheada antes de ser armazenada.'
+  })
+  @ApiBody({ 
+    type: CriaUsuarioDTO,
+    description: 'Dados do usuário a ser criado',
+    required: true
+  })
   @ApiCreatedResponse({
     description: 'Usuário criado com sucesso.',
-    type: UsuarioEntity,
+    type: CriaUsuarioResponseDTO,
+    schema: {
+      example: {
+        messagem: 'usuário criado com sucesso',
+        usuario: {
+          id: 'uuid',
+          nome: 'João',
+          email: 'joao@email.com',
+          username: 'joao123',
+          dataDeNascimento: '1990-01-01',
+          telefone: '11999999999',
+          createdAt: '2025-07-15T10:30:00Z',
+          updatedAt: '2025-07-15T10:30:00Z',
+          deletedAt: null
+        }
+      }
+    }
+  })
+  @ApiBadRequestResponse({ 
+    description: 'Dados inválidos para criação.',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          'O nome não pode ser vazio',
+          'Já existe um usuário com este username',
+          'O e-mail informado é inválido',
+          'A senha precisa ter pelo menos 6 caracteres',
+          'O telefone deve ter entre 8 e 20 caracteres',
+          'A data de nascimento deve ser uma data válida (YYYY-MM-DD)'
+        ],
+        error: 'Bad Request'
+      }
+    }
   })
   async criaUsuario(
     @Body() { senha, ...dadosDoUsuario }: CriaUsuarioDTO,
@@ -41,16 +110,55 @@ export class UsuarioController {
 
     return {
       messagem: 'usuário criado com sucesso',
-      usuario: new ListaUsuarioDTO(usuarioCriado.id, usuarioCriado.nome),
+      usuario: new ListaUsuarioDTO(
+        usuarioCriado.id,
+        usuarioCriado.nome,
+        usuarioCriado.email,
+        usuarioCriado.username,
+        usuarioCriado.dataDeNascimento,
+        usuarioCriado.telefone,
+        usuarioCriado.createdAt,
+        usuarioCriado.updatedAt,
+        usuarioCriado.deletedAt
+      ),
     };
   }
 
   @Public()
   @Get()
-  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiOperation({ 
+    summary: 'Lista todos os usuários',
+    description: 'Retorna uma lista de todos os usuários cadastrados no sistema.'
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Número da página de resultados',
+    example: 1
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Número de usuários por página',
+    example: 10
+  })
   @ApiOkResponse({
     description: 'Usuários obtidos com sucesso.',
-    type: [UsuarioEntity],
+    type: ListaUsuariosResponseDTO,
+    schema: {
+      properties: {
+        mensagem: { 
+          type: 'string', 
+          example: 'Usuários obtidos com sucesso.'
+        },
+        usuarios: { 
+          type: 'array',
+          items: { $ref: getSchemaPath(ListaUsuarioDTO) }
+        }
+      }
+    }
   })
   async listUsuarios() {
     const usuariosSalvos = await this.usuarioService.listUsuarios();
@@ -62,12 +170,65 @@ export class UsuarioController {
   }
 
   @Put('/:id')
-  @ApiOperation({ summary: 'Atualiza um usuário pelo ID' })
-  @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
-  @ApiBody({ type: AtualizaUsuarioDTO })
+  @ApiOperation({ 
+    summary: 'Atualiza um usuário pelo ID',
+    description: 'Atualiza os dados de um usuário existente identificado pelo ID fornecido.'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    type: String, 
+    description: 'ID do usuário a ser atualizado', 
+    example: 'uuid',
+    required: true
+  })
+  @ApiBody({ 
+    type: AtualizaUsuarioDTO,
+    description: 'Novos dados para atualizar o usuário',
+    required: true
+  })
   @ApiOkResponse({
     description: 'Usuário atualizado com sucesso.',
-    type: UsuarioEntity,
+    type: AtualizaUsuarioResponseDTO,
+    schema: {
+      example: {
+        messagem: 'usuário atualizado com sucesso',
+        usuario: {
+          id: 'uuid',
+          nome: 'João',
+          email: 'joao@email.com',
+          username: 'joao123',
+          dataDeNascimento: '1990-01-01',
+          telefone: '11999999999',
+          createdAt: '2025-07-15T10:30:00Z',
+          updatedAt: '2025-07-15T10:30:00Z',
+          deletedAt: null
+        }
+      }
+    }
+  })
+  @ApiNotFoundResponse({ 
+    description: 'Usuário não encontrado.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'O usuário não foi encontrado.',
+        error: 'Not Found'
+      }
+    }
+  })
+  @ApiBadRequestResponse({ 
+    description: 'Dados inválidos para atualização.',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          'O nome não pode ser vazio',
+          'Já existe um usuário com este username',
+          'O e-mail informado é inválido'
+        ],
+        error: 'Bad Request'
+      }
+    }
   })
   async atualizaUsuario(
     @Param('id') id: string,
@@ -85,18 +246,108 @@ export class UsuarioController {
   }
 
   @Delete('/:id')
-  @ApiOperation({ summary: 'Remove um usuário pelo ID' })
-  @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
+  @ApiOperation({ 
+    summary: 'Remove um usuário pelo ID',
+    description: 'Remove permanentemente um usuário do sistema pelo ID fornecido.'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    type: String, 
+    description: 'ID do usuário a ser removido', 
+    example: 'uuid',
+    required: true
+  })
   @ApiOkResponse({
     description: 'Usuário removido com sucesso.',
-    type: UsuarioEntity,
+    type: RemoveUsuarioResponseDTO,
+    schema: {
+      example: {
+        messagem: 'usuário removido com sucesso',
+        usuario: {
+          id: 'uuid',
+          nome: 'João',
+          email: 'joao@email.com',
+          username: 'joao123',
+          dataDeNascimento: '1990-01-01',
+          telefone: '11999999999',
+          createdAt: '2025-07-15T10:30:00Z',
+          updatedAt: '2025-07-15T10:30:00Z',
+          deletedAt: '2025-07-15T11:45:00Z'
+        }
+      }
+    }
+  })
+  @ApiNotFoundResponse({ 
+    description: 'Usuário não encontrado.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'O usuário não foi encontrado',
+        error: 'Not Found'
+      }
+    }
   })
   async removeUsuario(@Param('id') id: string) {
     const usuarioRemovido = await this.usuarioService.deletaUsuario(id);
 
     return {
-      messagem: 'usuário removido com suceso',
+      messagem: 'usuário removido com sucesso',
       usuario: usuarioRemovido,
     };
+  }
+
+  @Get('/:id')
+  @ApiOperation({ 
+    summary: 'Busca um usuário pelo ID',
+    description: 'Retorna os dados detalhados de um usuário específico pelo ID.'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    type: String, 
+    description: 'ID do usuário a ser buscado', 
+    example: 'uuid',
+    required: true
+  })
+  @ApiOkResponse({
+    description: 'Usuário encontrado com sucesso.',
+    type: ListaUsuarioDTO,
+    schema: {
+      example: {
+        id: 'uuid',
+        nome: 'João',
+        email: 'joao@email.com',
+        username: 'joao123',
+        dataDeNascimento: '1990-01-01',
+        telefone: '11999999999',
+        createdAt: '2025-07-15T10:30:00Z',
+        updatedAt: '2025-07-15T10:30:00Z',
+        deletedAt: null
+      }
+    }
+  })
+  @ApiNotFoundResponse({ 
+    description: 'Usuário não encontrado.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'O usuário não foi encontrado.',
+        error: 'Not Found'
+      }
+    }
+  })
+  async buscaUsuarioPorId(@Param('id') id: string) {
+    const usuario = await this.usuarioService.buscaPorId(id);
+    
+    return new ListaUsuarioDTO(
+      usuario.id,
+      usuario.nome,
+      usuario.email,
+      usuario.username,
+      usuario.dataDeNascimento,
+      usuario.telefone,
+      usuario.createdAt,
+      usuario.updatedAt,
+      usuario.deletedAt
+    );
   }
 }

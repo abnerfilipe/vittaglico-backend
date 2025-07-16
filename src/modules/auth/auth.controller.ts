@@ -6,41 +6,192 @@ import {
   HttpStatus,
   Post,
   Request,
+  Delete,
+  Param,
+  Headers,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+  ApiParam,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiNotFoundResponse,
+  ApiHeader,
+  ApiExtraModels,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
+import { TokenService } from './token.service';
+import { ListaTokenDTO } from './dto/ListaToken.dto';
+import { LoginDTO } from './dto/Login.dto'; // Você precisará criar este DTO
+import { LoginResponseDTO } from './dto/LoginResponse.dto'; // Você precisará criar este DTO
+import { ProfileResponseDTO } from './dto/ProfileResponse.dto'; // Você precisará criar este DTO
+import { TokensResponseDTO } from './dto/TokensResponse.dto'; // Você precisará criar este DTO
+import { ValidateTokenResponseDTO } from './dto/ValidateTokenResponse.dto'; // Você precisará criar este DTO
+import { MessageResponseDTO } from './dto/MessageResponse.dto';
 
 @ApiTags('auth')
+@ApiExtraModels(ListaTokenDTO, LoginResponseDTO, ProfileResponseDTO, MessageResponseDTO, TokensResponseDTO, ValidateTokenResponseDTO)
+@ApiBearerAuth('JWT-auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tokenService: TokenService
+  ) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  @ApiOperation({ summary: 'Realiza login e retorna o token JWT' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string', example: 'usuario1' },
-        password: { type: 'string', example: 'senha123' },
-      },
-      required: ['username', 'password'],
-    },
+  @ApiOperation({ 
+    summary: 'Realiza login e retorna o token JWT', 
+    description: 'Autentica um usuário com username e senha, retornando um token JWT válido que deve ser usado para autenticar requisições subsequentes.'
   })
-  @ApiResponse({ status: 200, description: 'Login realizado com sucesso.' })
-  @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })
-  signIn(@Body() signInDto: Record<string, any>) {
+  @ApiBody({ 
+    type: LoginDTO,
+    description: 'Credenciais do usuário para autenticação',
+    required: true 
+  })
+  @ApiOkResponse({
+    description: 'Login realizado com sucesso.',
+    type: LoginResponseDTO,
+    schema: {
+      example: { 
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+      }
+    }
+  })
+   @ApiBadRequestResponse({ 
+    description: 'Dados de entrada inválidos ou incompletos.',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          'O username não pode ser vazio',
+          'O username deve ser uma string',
+          'A senha não pode ser vazia',
+          'A senha deve ser uma string'
+        ],
+        error: 'Bad Request'
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Credenciais inválidas.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      }
+    }
+  })
+  signIn(@Body() signInDto: LoginDTO) {
     return this.authService.signIn(signInDto.username, signInDto.password);
   }
 
-  @ApiBearerAuth()
   @Get('profile')
-  @ApiOperation({ summary: 'Retorna o perfil do usuário autenticado' })
-  @ApiResponse({ status: 200, description: 'Perfil do usuário retornado com sucesso.' })
+  @ApiOperation({ 
+    summary: 'Retorna o perfil do usuário autenticado',
+    description: 'Retorna informações do perfil do usuário baseado no token JWT fornecido no cabeçalho de autorização.'
+  })
+  @ApiOkResponse({
+    description: 'Perfil do usuário retornado com sucesso.',
+    type: ProfileResponseDTO,
+    schema: {
+      example: {
+        sub: 'uuid-do-usuario',
+        username: 'usuario1',
+        email: 'usuario@email.com'
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Token inválido ou ausente.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      }
+    }
+  })
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ 
+    summary: 'Realiza logout revogando o token atual',
+    description: 'Revoga o token JWT atual, invalidando-o para requisições futuras.'
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Token JWT (Bearer)',
+    required: true,
+    schema: {
+      type: 'string',
+      example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+    }
+  })
+  @ApiOkResponse({ 
+    description: 'Logout realizado com sucesso.',
+    type: MessageResponseDTO,
+    schema: {
+      example: { 
+        message: 'Logout realizado com sucesso' 
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Token inválido ou ausente.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      }
+    }
+  })
+  async logout(
+    @Headers('authorization') auth: string
+  ) {
+    const token = auth?.split(' ')[1];
+    if (token) {
+      await this.authService.logout(token);
+    }
+    return { message: 'Logout realizado com sucesso' };
+  }
+
+  @Get('validate')
+  @ApiOperation({ 
+    summary: 'Valida se o token atual é válido',
+    description: 'Verifica se o token JWT fornecido é válido, não expirado e não revogado.'
+  })
+  @ApiOkResponse({
+    description: 'Status da validação do token.',
+    type: ValidateTokenResponseDTO,
+    schema: { 
+      example: { 
+        valid: true 
+      } 
+    }
+  })
+  @ApiUnauthorizedResponse({ 
+    description: 'Token inválido ou ausente.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      } 
+    }
+  })
+  async validarToken(@Headers('authorization') auth: string) {
+    const token = auth?.split(' ')[1];
+    const isValid = await this.authService.validateToken(token);
+    return { valid: isValid };
   }
 }

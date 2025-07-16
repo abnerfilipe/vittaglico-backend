@@ -26,6 +26,9 @@ export class UsuarioEntity {
   @Column({ name: 'senha', length: 255, nullable: false })
   senha: string;
 
+  @Column({ name: 'telefone', length: 20, nullable: false })
+  telefone: string;
+
   @Column({ name: 'data_de_nascimento',type: Date, nullable: false })
   dataDeNascimento: string;
 
