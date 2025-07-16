@@ -45,15 +45,15 @@ export class CriaUsuarioDTO {
   senha: string;
 
   @ApiProperty({
-    description: 'Número de telefone do usuário (entre 8 e 20 caracteres)',
-    example: '11999999999',
+    description: 'Número de telefone do usuário (entre 10 e 11 caracteres)',
+    example: '11123456789',
     required: true,
-    minLength: 8,
-    maxLength: 20
+    minLength: 10,
+    maxLength: 11
   })
   @IsNotEmpty({ message: 'O telefone não pode ser vazio' })
   @IsString()
-  @Length(8, 20, { message: 'O telefone deve ter entre 8 e 20 caracteres' })
+  @Length(10, 11, { message: 'O telefone deve ter entre 10 e 11 caracteres' })
   @TelefoneEhUnico({ message: 'Já existe um usuário com este telefone' })
   telefone: string;
 
