@@ -49,13 +49,6 @@ export class ListaUsuarioDTO {
   })
   readonly updatedAt?: string;
 
-  @ApiProperty({
-    description: 'Data de exclusão (soft delete)',
-    example: null,
-    nullable: true
-  })
-  readonly deletedAt?: string | null;
-
   constructor(
     id: string,
     nome: string,
@@ -65,7 +58,6 @@ export class ListaUsuarioDTO {
     telefone: string,
     createdAt?: string,
     updatedAt?: string,
-    deletedAt?: string | null,
   ) {
     this.id = id;
     this.nome = nome;
@@ -75,6 +67,5 @@ export class ListaUsuarioDTO {
     this.telefone = telefone;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
   }
 }

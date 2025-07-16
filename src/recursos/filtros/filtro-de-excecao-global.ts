@@ -17,7 +17,7 @@ export class FiltroDeExcecaoGlobal implements ExceptionFilter {
 
   catch(excecao: unknown, host: ArgumentsHost) {
     this.loggerNativo.error(excecao);
-    console.error(excecao);
+    // console.error(excecao);
 
     const { httpAdapter } = this.adapterHost;
 

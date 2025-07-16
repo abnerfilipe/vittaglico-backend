@@ -46,7 +46,7 @@ import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // V
   AtualizaUsuarioResponseDTO, 
   RemoveUsuarioResponseDTO
 )
-@ApiBearerAuth('JWT-auth')
+@ApiBearerAuth('bearer')
 @Controller('/usuario')
 export class UsuarioController {
   constructor(private usuarioService: UsuarioService) {}
@@ -77,7 +77,6 @@ export class UsuarioController {
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
           updatedAt: '2025-07-15T10:30:00Z',
-          deletedAt: null
         }
       }
     }
@@ -119,7 +118,6 @@ export class UsuarioController {
         usuarioCriado.telefone,
         usuarioCriado.createdAt,
         usuarioCriado.updatedAt,
-        usuarioCriado.deletedAt
       ),
     };
   }
@@ -200,8 +198,7 @@ export class UsuarioController {
           dataDeNascimento: '1990-01-01',
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
-          updatedAt: '2025-07-15T10:30:00Z',
-          deletedAt: null
+          updatedAt: '2025-07-15T10:30:00Z'
         }
       }
     }
@@ -272,7 +269,6 @@ export class UsuarioController {
           telefone: '11999999999',
           createdAt: '2025-07-15T10:30:00Z',
           updatedAt: '2025-07-15T10:30:00Z',
-          deletedAt: '2025-07-15T11:45:00Z'
         }
       }
     }
@@ -321,7 +317,6 @@ export class UsuarioController {
         telefone: '11999999999',
         createdAt: '2025-07-15T10:30:00Z',
         updatedAt: '2025-07-15T10:30:00Z',
-        deletedAt: null
       }
     }
   })
@@ -347,7 +342,6 @@ export class UsuarioController {
       usuario.telefone,
       usuario.createdAt,
       usuario.updatedAt,
-      usuario.deletedAt
     );
   }
 }

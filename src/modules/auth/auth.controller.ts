@@ -2,51 +2,45 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
-  Request,
-  Delete,
-  Param,
-  Headers,
+  Request
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
+  ApiHeader,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiParam,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-  ApiNotFoundResponse,
-  ApiHeader,
-  ApiExtraModels,
-  getSchemaPath,
+  ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
-import { TokenService } from './token.service';
 import { ListaTokenDTO } from './dto/ListaToken.dto';
 import { LoginDTO } from './dto/Login.dto'; // Você precisará criar este DTO
 import { LoginResponseDTO } from './dto/LoginResponse.dto'; // Você precisará criar este DTO
+import { MessageResponseDTO } from './dto/MessageResponse.dto';
 import { ProfileResponseDTO } from './dto/ProfileResponse.dto'; // Você precisará criar este DTO
 import { TokensResponseDTO } from './dto/TokensResponse.dto'; // Você precisará criar este DTO
 import { ValidateTokenResponseDTO } from './dto/ValidateTokenResponse.dto'; // Você precisará criar este DTO
-import { MessageResponseDTO } from './dto/MessageResponse.dto';
+import { UsuarioService } from '../usuario/usuario.service';
 
 @ApiTags('auth')
 @ApiExtraModels(ListaTokenDTO, LoginResponseDTO, ProfileResponseDTO, MessageResponseDTO, TokensResponseDTO, ValidateTokenResponseDTO)
-@ApiBearerAuth('JWT-auth')
+@ApiBearerAuth('bearer')
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private tokenService: TokenService
+    private usuarioService: UsuarioService,
   ) {}
 
   @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ 
     summary: 'Realiza login e retorna o token JWT', 
@@ -120,7 +114,7 @@ export class AuthController {
     }
   })
   getProfile(@Request() req) {
-    return req.user;
+    return this.usuarioService.buscaPorUsername(req.user.username);
   }
 
   @Post('logout')
@@ -128,15 +122,6 @@ export class AuthController {
   @ApiOperation({ 
     summary: 'Realiza logout revogando o token atual',
     description: 'Revoga o token JWT atual, invalidando-o para requisições futuras.'
-  })
-  @ApiHeader({
-    name: 'Authorization',
-    description: 'Token JWT (Bearer)',
-    required: true,
-    schema: {
-      type: 'string',
-      example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-    }
   })
   @ApiOkResponse({ 
     description: 'Logout realizado com sucesso.',
@@ -157,12 +142,11 @@ export class AuthController {
     }
   })
   async logout(
-    @Headers('authorization') auth: string
+    @Headers('Authorization') authorization: string
   ) {
-    const token = auth?.split(' ')[1];
-    if (token) {
-      await this.authService.logout(token);
-    }
+    // O valor já vem como "Bearer <token>", basta passar para o serviço
+    const token = authorization?.split(' ')[1];
+    await this.authService.logout(token);
     return { message: 'Logout realizado com sucesso' };
   }
 
@@ -189,7 +173,7 @@ export class AuthController {
       } 
     }
   })
-  async validarToken(@Headers('authorization') auth: string) {
+  async validarToken(@Headers('Authorization') auth: string) {
     const token = auth?.split(' ')[1];
     const isValid = await this.authService.validateToken(token);
     return { valid: isValid };

@@ -24,7 +24,7 @@ export class UsuarioService {
   async listUsuarios() {
     const usuariosSalvos = await this.usuarioRepository.find();
     const usuariosLista = usuariosSalvos.map(
-      (usuario) => new ListaUsuarioDTO(usuario.id, usuario.nome, usuario.username, usuario.email, usuario.dataDeNascimento, usuario.telefone, usuario?.createdAt, usuario?.updatedAt, usuario?.deletedAt),
+      (usuario) => new ListaUsuarioDTO(usuario.id, usuario.nome, usuario.username, usuario.email, usuario.dataDeNascimento, usuario.telefone, usuario?.createdAt, usuario?.updatedAt),
     );
     return usuariosLista;
   }

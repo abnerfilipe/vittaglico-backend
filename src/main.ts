@@ -35,15 +35,15 @@ async function bootstrap() {
     .addTag('auth', 'Endpoints relacionados à autenticação')
     .addTag('usuario', 'Endpoints relacionados ao gerenciamento de usuários')
     .addBearerAuth(
-      { 
-        type: 'http', 
-        scheme: 'bearer', 
+      {
+        type: 'http',
+        scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'Authorization',
         description: 'Insira seu token JWT',
         in: 'header'
       },
-      'JWT-auth'
+      'bearer' // ou 'bearer'
     )
     .build();
 

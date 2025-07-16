@@ -85,4 +85,17 @@ export class TokenService {
       { isRevoked: true }
     );
   }
+  async revogarTodosTokensDoUsuarioAhPartirDoToken(tokenAtual: string): Promise<void> {
+    const usuarioId = await this.tokenRepository.findOne({
+      where: { token: tokenAtual },
+      select: ['usuarioId']
+    });
+    await this.tokenRepository
+    .createQueryBuilder()
+    .update()
+    .set({ isRevoked: true })
+    .where('usuario_id = :usuarioId', { usuarioId: usuarioId?.usuarioId || usuarioId })
+    .andWhere('is_revoked = false')
+    .execute();
+  }
 }

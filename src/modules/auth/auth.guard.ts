@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { jwtConstants } from './constants';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
-import { UsuarioPayload } from './auth.service';
+import { AuthService, UsuarioPayload } from './auth.service';
 
 export interface RequisicaoComUsuario extends Request {
   usuario: UsuarioPayload;
@@ -20,6 +20,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
+    private authService: AuthService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -38,9 +39,13 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret,
-      });
+      // const payload = await this.jwtService.verifyAsync(token, {
+      //   secret: jwtConstants.secret,
+      // });
+      const payload = await this.authService.validateTokenReturnPayload(token);
+      if(payload == null){
+        throw new UnauthorizedException('Token de acesso inválido.');
+      }
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request['user'] = payload;
