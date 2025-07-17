@@ -65,7 +65,6 @@ export class CriaUsuarioDTO {
   @IsOptional()
   @Transform(({ value }) => value === '' ? undefined : value)
   @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
-  @Matches(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, { message: 'A data de nascimento deve estar no formato DD/MM/AAAA' })
   dataDeNascimento: string;
 
     @ApiProperty({

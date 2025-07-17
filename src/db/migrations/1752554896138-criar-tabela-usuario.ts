@@ -10,7 +10,7 @@ export class CriarTabelaUsuario1752554896138 implements MigrationInterface {
         "email" character varying(70) NOT NULL, 
         "senha" character varying(255) NOT NULL, 
         "telefone" character varying(12),
-        "data_de_nascimento" DATE,
+        "data_de_nascimento" varchar(10),
         "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
         "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
         "deleted_at" TIMESTAMP, 
