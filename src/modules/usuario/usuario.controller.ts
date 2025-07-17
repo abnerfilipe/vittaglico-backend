@@ -32,7 +32,7 @@ import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
 import { UsuarioService } from './usuario.service';
-import { Public } from '../auth/decorators/public.decorator';
+import { Public } from '../../core/decorators/public.decorator';
 import { UsuarioEntity } from './usuario.entity';
 import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você precisará criar este DTO
 import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
@@ -98,7 +98,7 @@ export class UsuarioController {
           'O e-mail informado é inválido',
           'A senha precisa ter pelo menos 6 caracteres',
           'O telefone deve ter entre 8 e 20 caracteres',
-          'A data de nascimento deve ser uma data válida (YYYY-MM-DD)'
+          'A data de nascimento deve ser uma data válida (DD/MM/AAAA)'
         ],
         error: 'Bad Request'
       }

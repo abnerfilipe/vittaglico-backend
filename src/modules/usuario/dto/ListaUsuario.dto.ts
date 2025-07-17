@@ -20,8 +20,8 @@ export class ListaUsuarioDTO {
   readonly email: string;
 
   @ApiProperty({
-    description: 'Data de nascimento do usuário no formato YYYY-MM-DD',
-    example: '1990-01-01'
+    description: 'Data de nascimento do usuário no formato DD/MM/AAAA',
+    example: '01/02/1990'
   })
   readonly dataDeNascimento: string;
 

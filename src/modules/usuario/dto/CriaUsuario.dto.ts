@@ -3,6 +3,7 @@ import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, Length, MinLen
 import { EmailEhUnico } from '../validacao/email-eh-unico.validator';
 import { TelefoneEhUnico } from '../validacao/telefone-eh-unico.validator';
 import { Transform } from 'class-transformer';
+import { Matches } from 'class-validator';
 
 export class CriaUsuarioDTO {
   @ApiProperty({
@@ -56,14 +57,15 @@ export class CriaUsuarioDTO {
   telefone: string;
 
   @ApiProperty({
-    description: 'Data de nascimento no formato YYYY-MM-DD',
-    example: '1990-01-01',
+    description: 'Data de nascimento no formato DD/MM/AAAA',
+    example: '01/02/1990',
     required: false,
     format: 'date'
   })
   @IsOptional()
   @Transform(({ value }) => value === '' ? undefined : value)
-  @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (YYYY-MM-DD)' })
+  @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
+  @Matches(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, { message: 'A data de nascimento deve estar no formato DD/MM/AAAA' })
   dataDeNascimento: string;
 
     @ApiProperty({

@@ -20,7 +20,7 @@ import {
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { Public } from './decorators/public.decorator';
+import { Public } from '../../core/decorators/public.decorator';
 import { ListaTokenDTO } from './dto/ListaToken.dto';
 import { LoginDTO } from './dto/Login.dto'; // Você precisará criar este DTO
 import { LoginResponseDTO } from './dto/LoginResponse.dto'; // Você precisará criar este DTO

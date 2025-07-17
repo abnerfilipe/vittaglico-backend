@@ -16,18 +16,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Vittaglico API')
     .setDescription(`
-      API de gerenciamento do sistema Vittaglico
-      
-      Esta API permite gerenciar usuários e autenticação.
-      
-       Características principais:
-      - Sistema completo de autenticação JWT
-      - Gestão de usuários
-      - Revogação de tokens
-      - Segurança baseada em tokens
-      
-      Para utilizar os endpoints protegidos, obtenha um token através do endpoint \`/auth/login\` 
-      e inclua-o no cabeçalho de autorização como \`Bearer seu-token-aqui\`.
+      Esta API é responsável por gerenciar usuários, autenticação e outras funcionalidades do sistema Vittaglico.
     `)
     .setVersion('0.0.1')
     .addServer('http://localhost:3000', 'Servidor de Desenvolvimento')
@@ -69,7 +58,12 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
-  app.enableCors();
+  app.enableCors({
+    origin: true, 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'DNT', 'User-Agent', 'sec-ch-ua', 'sec-ch-ua-platform', 'sec-ch-ua-mobile', 'Referer'],
+    credentials: true,
+  });
   await app.listen(process.env.PORT ?? 3000,'0.0.0.0');
   console.log(`Aplicação rodando em: ${await app.getUrl()}`);
 }
