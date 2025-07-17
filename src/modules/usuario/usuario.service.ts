@@ -5,12 +5,15 @@ import { UsuarioEntity } from './usuario.entity';
 import { Repository } from 'typeorm';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
+import { TokenEntity } from '../auth/token.entity';
 
 @Injectable()
 export class UsuarioService {
   constructor(
     @InjectRepository(UsuarioEntity)
     private readonly usuarioRepository: Repository<UsuarioEntity>,
+    @InjectRepository(TokenEntity) 
+    private readonly tokenRepository: Repository<TokenEntity>,
   ) { }
 
   async criaUsuario(dadosDoUsuario: CriaUsuarioDTO) {
@@ -88,4 +91,13 @@ export class UsuarioService {
       throw new NotFoundException('O usuário não foi encontrado.');
     return usuario;
   }
+
+  async buscarUsuarioIdPeloTokens(token: string): Promise<string | null> {
+    const tokenEntity = await this.tokenRepository.findOne({
+      where: { token },
+      select: ['usuarioId']
+    });
+    return tokenEntity ? tokenEntity.usuarioId : null;
+  }
+
 }

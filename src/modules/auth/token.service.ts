@@ -7,9 +7,8 @@ import { TokenEntity } from './token.entity';
 @Injectable()
 export class TokenService {
   constructor(
-    @InjectRepository(TokenEntity)
-    private tokenRepository: Repository<TokenEntity>,
-    private jwtService: JwtService,
+   @InjectRepository(TokenEntity) 
+    private readonly tokenRepository: Repository<TokenEntity>,
   ) {}
 
   async salvarToken(usuarioId: string, token: string, expiresIn: number): Promise<TokenEntity> {

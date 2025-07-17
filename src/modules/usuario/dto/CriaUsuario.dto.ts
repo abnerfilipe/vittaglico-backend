@@ -65,4 +65,24 @@ export class CriaUsuarioDTO {
   @Transform(({ value }) => value === '' ? undefined : value)
   @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (YYYY-MM-DD)' })
   dataDeNascimento: string;
+
+    @ApiProperty({
+    description: 'Aceite dos Termos e Condições',
+    example: true,
+    required: true,
+    type: Boolean,
+    default: true
+  })
+  @IsNotEmpty({ message: 'É obrigatório aceitar os Termos e Condições' })
+  aceiteTermosCondicoes: boolean;
+
+  @ApiProperty({
+    description: 'Aceite da Política de Privacidade',
+    example: true,
+    required: true,
+    type: Boolean,
+    default: true
+  })
+  @IsNotEmpty({ message: 'É obrigatório aceitar a Política de Privacidade' })
+  aceitePoliticaDePrivacidade: boolean;
 }

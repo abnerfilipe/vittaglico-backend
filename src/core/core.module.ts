@@ -1,12 +1,19 @@
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
-import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { Module, ConsoleLogger } from '@nestjs/common';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { FiltroDeExcecaoGlobal } from './filtros/filtro-de-excecao-global';
+import { LoggerGlobalInterceptor } from './interceptors/logger-global.interceptor';
 
 @Module({
   providers: [
-    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    ConsoleLogger,
+      {
+      provide: APP_FILTER,
+      useClass: FiltroDeExcecaoGlobal,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerGlobalInterceptor,
+    },
   ],
 })
 export class CoreModule {}

@@ -1,14 +1,12 @@
 import { ClassSerializerInterceptor, ConsoleLogger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CoreModule } from './core/core.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { FiltroDeExcecaoGlobal } from './recursos/filtros/filtro-de-excecao-global';
-import { LoggerGlobalInterceptor } from './recursos/interceptores/logger-global.interceptor';
-import { PostgresConfigService } from './config/postgres.config.service';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsuarioModule } from './modules/usuario/usuario.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { PostgresConfigService } from './config/postgres.config.service';
+import { CoreModule } from './core/core.module';
 import { AuthGuard } from './modules/auth/auth.guard';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsuarioModule } from './modules/usuario/usuario.module';
 
 @Module({
   imports: [
@@ -26,16 +24,8 @@ import { AuthGuard } from './modules/auth/auth.guard';
   controllers: [],
   providers: [
     {
-      provide: APP_FILTER,
-      useClass: FiltroDeExcecaoGlobal,
-    },
-    {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggerGlobalInterceptor,
     },
     ConsoleLogger,
     {

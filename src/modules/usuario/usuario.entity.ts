@@ -29,6 +29,12 @@ export class UsuarioEntity {
   @Column({ name: 'data_de_nascimento',type: Date, nullable: true })
   dataDeNascimento: string;
 
+  @Column({ name: 'aceite_termos_condicoes', type: 'boolean', nullable: false, default: true })
+  aceiteTermosCondicoes: boolean;
+
+  @Column({ name: 'aceite_politica_de_privacidade', type: 'boolean', nullable: false, default: true })
+  aceitePoliticaDePrivacidade: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: string;
 

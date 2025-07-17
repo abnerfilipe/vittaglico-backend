@@ -5,10 +5,11 @@ import { UsuarioEntity } from './usuario.entity';
 import { UsuarioService } from './usuario.service';
 import { EmailEhUnicoValidator } from './validacao/email-eh-unico.validator';
 import { TelefoneEhUnicoValidator } from './validacao/telefone-eh-unico.validator';
+import { TokenEntity } from '../auth/token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UsuarioEntity]),
+    TypeOrmModule.forFeature([UsuarioEntity,TokenEntity]),
   ],
   controllers: [UsuarioController],
   providers: [

@@ -67,4 +67,5 @@ export class AtualizaUsuarioDTO extends PartialType(CriaUsuarioDTO) {
   @IsOptional()
   @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (YYYY-MM-DD)' })
   dataDeNascimento?: string;
+
 }

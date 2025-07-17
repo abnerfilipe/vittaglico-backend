@@ -3,11 +3,15 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
+  Headers,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,7 +28,6 @@ import {
   getSchemaPath,
   ApiQuery,
 } from '@nestjs/swagger';
-import { HashearSenhaPipe } from '../../recursos/pipes/hashear-senha.pipe';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
@@ -35,6 +38,9 @@ import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você
 import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
 import { AtualizaUsuarioResponseDTO } from './dto/AtualizaUsuarioResponse.dto'; // Você precisará criar este DTO
 import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // Você precisará criar este DTO
+import { AuthService } from '../auth/auth.service';
+import { TokenService } from '../auth/token.service';
+import { HashearSenhaPipe } from 'src/core/pipes/hashear-senha.pipe';
 
 @ApiTags('usuario')
 @ApiExtraModels(
@@ -49,7 +55,9 @@ import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // V
 @ApiBearerAuth('bearer')
 @Controller('/usuario')
 export class UsuarioController {
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+  ) {}
 
   @Public()
   @Post()
@@ -162,23 +170,16 @@ export class UsuarioController {
       usuarios: usuariosSalvos,
     };
   }
-
-  @Put('/:id')
-  @ApiOperation({ 
-    summary: 'Atualiza um usuário pelo ID',
-    description: 'Atualiza os dados de um usuário existente identificado pelo ID fornecido.'
+  @Put()
+  @ApiOperation({
+    summary: 'Atualiza os dados do próprio usuário autenticado',
+    description:
+      'Permite que o usuário autenticado atualize seus próprios dados. O usuário é identificado pelo token JWT enviado no header.',
   })
-  @ApiParam({ 
-    name: 'id', 
-    type: String, 
-    description: 'ID do usuário a ser atualizado', 
-    example: 'uuid',
-    required: true
-  })
-  @ApiBody({ 
+  @ApiBody({
     type: AtualizaUsuarioDTO,
-    description: 'Novos dados para atualizar o usuário',
-    required: true
+    description: 'Novos dados para atualizar o usuário autenticado',
+    required: true,
   })
   @ApiOkResponse({
     description: 'Usuário atualizado com sucesso.',
@@ -192,40 +193,46 @@ export class UsuarioController {
           email: 'joao@email.com',
           dataDeNascimento: '1990-01-01',
           telefone: '11999999999',
+          aceiteTermosCondicoes: true,
+          aceitePoliticaDePrivacidade: true,
           createdAt: '2025-07-15T10:30:00Z',
-          updatedAt: '2025-07-15T10:30:00Z'
-        }
-      }
-    }
+          updatedAt: '2025-07-15T10:30:00Z',
+        },
+      },
+    },
   })
-  @ApiNotFoundResponse({ 
+  @ApiNotFoundResponse({
     description: 'Usuário não encontrado.',
     schema: {
       example: {
         statusCode: 404,
         message: 'O usuário não foi encontrado.',
-        error: 'Not Found'
-      }
-    }
+        error: 'Not Found',
+      },
+    },
   })
-  @ApiBadRequestResponse({ 
+  @ApiBadRequestResponse({
     description: 'Dados inválidos para atualização.',
     schema: {
       example: {
         statusCode: 400,
-        message: [
-          'O e-mail informado é inválido'
-        ],
-        error: 'Bad Request'
-      }
-    }
+        message: ['O e-mail informado é inválido'],
+        error: 'Bad Request',
+      },
+    },
   })
   async atualizaUsuario(
-    @Param('id') id: string,
+    @Headers('Authorization') authorization: string,
     @Body() novosDados: AtualizaUsuarioDTO,
   ) {
+    const token = authorization?.replace('Bearer ', '')[0];
+    const usuarioId = await this.usuarioService.buscarUsuarioIdPeloTokens(token);
+    if (!usuarioId) {
+      throw new NotFoundException('Usuário autenticado não encontrado.');
+    }
+
     const usuarioAtualizado = await this.usuarioService.atualizaUsuario(
-      id,
+      usuarioId,
       novosDados,
     );
 
