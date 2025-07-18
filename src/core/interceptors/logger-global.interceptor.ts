@@ -8,7 +8,7 @@ import {
 import { Observable, tap } from 'rxjs';
 // Importa tipos do Fastify
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { RequisicaoComUsuario } from 'src/modules/auth/auth.guard';
+import { RequisicaoComUsuario } from '../../modules/auth/auth.guard';
 
 @Injectable()
 export class LoggerGlobalInterceptor implements NestInterceptor {

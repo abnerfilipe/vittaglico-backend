@@ -4,9 +4,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
+import { GlicemiaEntity } from '../glicemia/entities/glicemia.entity';
 
 @Entity({ name: 'usuarios' })
 export class UsuarioEntity {
@@ -43,4 +46,7 @@ export class UsuarioEntity {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string;
+
+  @OneToMany(() => GlicemiaEntity, (glicemia) => glicemia.usuario)
+  glicemias: GlicemiaEntity[];
 }

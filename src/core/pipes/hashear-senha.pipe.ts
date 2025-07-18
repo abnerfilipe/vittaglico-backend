@@ -1,7 +1,7 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { jwtConstants } from 'src/modules/auth/constants';
+import { jwtConstants } from '../../modules/auth/constants';
 
 @Injectable()
 export class HashearSenhaPipe implements PipeTransform {

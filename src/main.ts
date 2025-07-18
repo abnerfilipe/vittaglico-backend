@@ -23,6 +23,7 @@ async function bootstrap() {
     .addServer('https://api.vittaglico.com.br', 'Servidor de Produção')
     .addTag('auth', 'Endpoints relacionados à autenticação')
     .addTag('usuario', 'Endpoints relacionados ao gerenciamento de usuários')
+    .addTag('glicemia', 'Endpoints relacionados ao gerenciamento de glicemia')
     .addBearerAuth(
       {
         type: 'http',

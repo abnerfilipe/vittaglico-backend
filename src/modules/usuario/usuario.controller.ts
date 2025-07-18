@@ -3,44 +3,36 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   Headers,
-  HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
-  Put,
-  Req,
+  Put
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-  ApiOkResponse,
-  ApiCreatedResponse,
   ApiBadRequestResponse,
-  ApiNotFoundResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
   ApiExtraModels,
-  getSchemaPath,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiQuery,
+  ApiTags,
+  getSchemaPath
 } from '@nestjs/swagger';
-import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
-import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
-import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
-import { UsuarioService } from './usuario.service';
 import { Public } from '../../core/decorators/public.decorator';
-import { UsuarioEntity } from './usuario.entity';
-import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você precisará criar este DTO
-import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
+import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { AtualizaUsuarioResponseDTO } from './dto/AtualizaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
+import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
+import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
 import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // Você precisará criar este DTO
-import { AuthService } from '../auth/auth.service';
-import { TokenService } from '../auth/token.service';
-import { HashearSenhaPipe } from 'src/core/pipes/hashear-senha.pipe';
+import { UsuarioService } from './usuario.service';
+import { HashearSenhaPipe } from '../../core/pipes/hashear-senha.pipe';
 
 @ApiTags('usuario')
 @ApiExtraModels(
@@ -230,7 +222,7 @@ export class UsuarioController {
     if (!usuarioId) {
       throw new NotFoundException('Usuário autenticado não encontrado.');
     }
-
+    
     const usuarioAtualizado = await this.usuarioService.atualizaUsuario(
       usuarioId,
       novosDados,

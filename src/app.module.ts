@@ -7,6 +7,7 @@ import { CoreModule } from './core/core.module';
 import { AuthGuard } from './modules/auth/auth.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
+import { GlicemiaModule } from './modules/glicemia/glicemia.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
     }),
     UsuarioModule,
     AuthModule,
+    GlicemiaModule
   ],
   controllers: [],
   providers: [
@@ -35,3 +37,4 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
   ],
 })
 export class AppModule {}
+
