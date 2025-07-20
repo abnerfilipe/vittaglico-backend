@@ -6,7 +6,4 @@ export class ConfiguracoesInsulinaDTO {
 
   @ApiProperty({ description: 'Fator de sensibilidade à insulina', example: 50 })
   fatorSensibilidadeInsulina: number;
-
-  @ApiProperty({ description: 'Duração da ação da insulina (horas)', example: 3 })
-  duracaoAcaoInsulina: number;
 }

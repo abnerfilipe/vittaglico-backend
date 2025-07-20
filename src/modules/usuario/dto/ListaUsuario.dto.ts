@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ConfiguracoesInsulinaDTO } from './ConfiguracoesInsulina.dto';
+import { Transform } from 'class-transformer';
 
 export class ListaUsuarioDTO {
   @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
@@ -24,5 +25,6 @@ export class ListaUsuarioDTO {
   updatedAt: string;
 
   @ApiProperty({ description: 'Configurações de insulina do usuário', required: false })
+  @Transform(({ value }) => value === '' ? undefined : value)
   configuracoesInsulina?: ConfiguracoesInsulinaDTO;
 }

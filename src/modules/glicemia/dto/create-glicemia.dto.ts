@@ -27,6 +27,7 @@ export class CreateGlicemiaDto {
     required: false,
     default: 'mg/dL',
   })
+  @Transform(({ value }) => value === '' ? undefined : "mg/dL")
   @IsOptional()
   medida?: string = 'mg/dL';
 
@@ -37,6 +38,7 @@ export class CreateGlicemiaDto {
   })
   @IsOptional()
   @IsEnum(PeriodoEnum)
+  @Transform(({ value }) => value === '' ? undefined : value)
   periodo?: PeriodoEnum;
 
   @ApiProperty({

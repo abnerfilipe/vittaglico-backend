@@ -19,6 +19,7 @@ export class UpdateGlicemiaDto {
     required: false,
   })
   @IsInt()
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsOptional()
   valor?: number;
 
@@ -29,6 +30,7 @@ export class UpdateGlicemiaDto {
   })
   @IsOptional()
   @IsEnum(PeriodoEnum)
+  @Transform(({ value }) => value === '' ? undefined : value)
   periodo?: PeriodoEnum;
 
   @ApiProperty({

@@ -37,4 +37,6 @@ export class Insulina {
   @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.insulinaAssociada)
   aplicacoes: AplicacaoInsulina[];
 
+  
+
 }

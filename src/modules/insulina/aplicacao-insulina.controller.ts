@@ -26,7 +26,7 @@ export class AplicacaoInsulinaController {
   async create(@Body() createAplicacaoInsulinaDto: CreateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
     return this.aplicacaoInsulinaService.create(createAplicacaoInsulinaDto);
   }
-
+  
   @Post('calcular-bolus')
   @ApiOperation({ summary: 'Calcula o bolus de correção de glicemia para um usuário' })
   @ApiOkResponse({
@@ -47,6 +47,7 @@ export class AplicacaoInsulinaController {
       const bolus = await this.calculadoraCorrecaoGlicemiaService.calcularBolusCorrecao(
         calcularBolusDto.usuarioId,
         calcularBolusDto.glicoseAtual,
+        calcularBolusDto.glicemiaId,
       );
       return { bolusCorrecao: bolus };
     } catch (error) {

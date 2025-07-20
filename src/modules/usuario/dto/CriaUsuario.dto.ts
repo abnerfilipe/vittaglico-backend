@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { ConfiguracoesInsulinaDTO } from './ConfiguracoesInsulina.dto';
+import { Transform } from 'class-transformer';
 
 export class CriaUsuarioDTO {
   @ApiProperty({ description: 'Nome do usuário', example: 'João da Silva' })
@@ -25,6 +26,16 @@ export class CriaUsuarioDTO {
   @ApiProperty({ description: 'Data de nascimento do usuário', example: '10/02/1990' })
   @IsString()
   @Matches(/^(\d{2})\/(\d{2})\/(\d{4})$/, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
+  @Transform(({ value }) => {
+    if (!value || typeof value !== 'string') return undefined;
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
+    const match = value.match(regex);
+    if (match) {
+      const [_, dia, mes, ano, hora = '00', min = '00', seg = '00'] = match;
+      return `${ano}-${mes}-${dia}T${hora}:${min}:${seg}`;
+    }
+    return value;
+  })
   dataDeNascimento: string;
 
   @ApiProperty({ description: 'Configurações de insulina do usuário' })

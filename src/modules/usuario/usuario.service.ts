@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 import { TokenEntity } from '../auth/token.entity';
-import { ConfiguracoesInsulina } from './configuracoes-insulina';
+import { ConfiguracoesInsulina } from './entities/configuracoes-insulina';
 
 @Injectable()
 export class UsuarioService {
@@ -37,7 +37,7 @@ export class UsuarioService {
         listaUsuario.telefone = usuario.telefone;
         listaUsuario.createdAt = usuario.createdAt;
         listaUsuario.updatedAt = usuario.updatedAt;
-        listaUsuario.configuracoesInsulina = usuario.configuracoesInsulina ? new ConfiguracoesInsulina(usuario.configuracoesInsulina.glicoseAlvo, usuario.configuracoesInsulina.fatorSensibilidadeInsulina, usuario.configuracoesInsulina.duracaoAcaoInsulina) : undefined;
+        listaUsuario.configuracoesInsulina = usuario.configuracoesInsulina ? new ConfiguracoesInsulina(usuario.configuracoesInsulina.glicoseAlvo, usuario.configuracoesInsulina.fatorSensibilidadeInsulina) : undefined;
         return listaUsuario;
       }
     );
@@ -114,7 +114,7 @@ export class UsuarioService {
 
   async salvarConfiguracoesInsulina(
     usuarioId: string,
-    configs: { glicoseAlvo: number; fatorSensibilidadeInsulina: number; duracaoAcaoInsulina: number },
+    configs: { glicoseAlvo: number; fatorSensibilidadeInsulina: number },
   ): Promise<Usuario> {
     const usuario = await this.buscaPorId(usuarioId);
     if (!usuario) {
@@ -124,7 +124,6 @@ export class UsuarioService {
     const novasConfigs = new ConfiguracoesInsulina(
       configs.glicoseAlvo,
       configs.fatorSensibilidadeInsulina,
-      configs.duracaoAcaoInsulina,
     );
 
     return this.atualizaUsuario(usuarioId, { configuracoesInsulina: novasConfigs });

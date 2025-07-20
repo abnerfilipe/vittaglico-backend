@@ -12,7 +12,7 @@ import {
 import { Glicemia } from '../../glicemia/entities/glicemia.entity';
 import { AplicacaoInsulina } from '../../insulina/entities/aplicacao-insulina.entity';
 import { Insulina } from '../../insulina/entities/insulina.entity';
-import type { ConfiguracoesInsulina } from '../configuracoes-insulina';
+import type { ConfiguracoesInsulina } from './configuracoes-insulina';
 
 @Entity({ name: 'usuarios' })
 export class Usuario {

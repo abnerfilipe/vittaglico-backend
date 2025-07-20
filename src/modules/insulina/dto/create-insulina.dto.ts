@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsNumber, IsEnum, IsUUID } from 'class-validator';
 import { TipoInsulinaEnum } from '../enum/tipoInsulina.enum';
+import { Transform } from 'class-transformer';
 
 export class CreateInsulinaDto {
   @ApiProperty({ description: 'Nome da insulina', example: 'Humalog' })
@@ -18,6 +19,7 @@ export class CreateInsulinaDto {
 
   @ApiProperty({ description: 'Pico de ação em horas (opcional)', example: 1.5, required: false })
   @IsNumber()
+  @Transform(({ value }) => value === '' ? undefined : value)
   picoAcaoHoras?: number;
 
   @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
