@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
 import { TokenEntity } from '../auth/token.entity';
+import { ConfiguracoesInsulina } from './configuracoes-insulina';
 
 @Injectable()
 export class UsuarioService {
@@ -27,7 +28,18 @@ export class UsuarioService {
   async listUsuarios() {
     const usuariosSalvos = await this.usuarioRepository.find();
     const usuariosLista = usuariosSalvos.map(
-      (usuario) => new ListaUsuarioDTO(usuario.id, usuario.nome, usuario.email, usuario.dataDeNascimento, usuario.telefone, usuario?.createdAt, usuario?.updatedAt),
+      (usuario) => {
+        const listaUsuario = new ListaUsuarioDTO();
+        listaUsuario.id = usuario.id;
+        listaUsuario.nome = usuario.nome;
+        listaUsuario.email = usuario.email;
+        listaUsuario.dataDeNascimento = usuario.dataDeNascimento;
+        listaUsuario.telefone = usuario.telefone;
+        listaUsuario.createdAt = usuario.createdAt;
+        listaUsuario.updatedAt = usuario.updatedAt;
+        listaUsuario.configuracoesInsulina = usuario.configuracoesInsulina ? new ConfiguracoesInsulina(usuario.configuracoesInsulina.glicoseAlvo, usuario.configuracoesInsulina.fatorSensibilidadeInsulina, usuario.configuracoesInsulina.duracaoAcaoInsulina) : undefined;
+        return listaUsuario;
+      }
     );
     return usuariosLista;
   }
@@ -98,6 +110,24 @@ export class UsuarioService {
       select: ['usuarioId']
     });
     return tokenEntity ? tokenEntity.usuarioId : null;
+  }
+
+  async salvarConfiguracoesInsulina(
+    usuarioId: string,
+    configs: { glicoseAlvo: number; fatorSensibilidadeInsulina: number; duracaoAcaoInsulina: number },
+  ): Promise<Usuario> {
+    const usuario = await this.buscaPorId(usuarioId);
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado.');
+    }
+
+    const novasConfigs = new ConfiguracoesInsulina(
+      configs.glicoseAlvo,
+      configs.fatorSensibilidadeInsulina,
+      configs.duracaoAcaoInsulina,
+    );
+
+    return this.atualizaUsuario(usuarioId, { configuracoesInsulina: novasConfigs });
   }
 
 }

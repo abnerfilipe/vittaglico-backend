@@ -10,8 +10,8 @@ export class AplicacaoInsulina {
   @Column('float', { name: 'quantidade_unidades' })
   quantidadeUnidades: number;
 
-  @Column({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP', name: 'data_hora_aplicacao' })
-  dataHoraAplicacao: Date;
+  @Column({ name: 'data_hora_aplicacao', type: Date, nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  dataHoraAplicacao: string;
 
   @ManyToOne(() => Usuario, (usuario) => usuario.aplicacoesInsulina, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'usuario_id' })
@@ -26,4 +26,8 @@ export class AplicacaoInsulina {
 
   @Column({ name: 'insulina_id', nullable: true })
   insulinaId: string | null;
+
+  @Column('float')
+  duracaoAcaoInsulinaEfetiva: number; // DAI no momento da aplicação (em horas)
+
 }

@@ -9,9 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
-import { GlicemiaEntity } from '../../glicemia/entities/glicemia.entity';
+import { Glicemia } from '../../glicemia/entities/glicemia.entity';
 import { AplicacaoInsulina } from '../../insulina/entities/aplicacao-insulina.entity';
 import { Insulina } from '../../insulina/entities/insulina.entity';
+import type { ConfiguracoesInsulina } from '../configuracoes-insulina';
 
 @Entity({ name: 'usuarios' })
 export class Usuario {
@@ -49,8 +50,8 @@ export class Usuario {
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string;
 
-  @OneToMany(() => GlicemiaEntity, (glicemia) => glicemia.usuario)
-  glicemias: GlicemiaEntity[];
+  @OneToMany(() => Glicemia, (glicemia) => glicemia.usuario)
+  glicemias: Glicemia[];
 
   @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.usuario, { cascade: ['insert', 'update'] })
   aplicacoesInsulina: AplicacaoInsulina[];
@@ -59,4 +60,10 @@ export class Usuario {
   @OneToMany(() => Insulina, (insulina) => insulina.usuario, { cascade: ['insert', 'update'] })
   insulinas: Insulina[]; // Renomeado para 'insulinas'
 
+  @Column({ type: 'jsonb', nullable: true })
+  configuracoesInsulina: ConfiguracoesInsulina | null; // Armazenado como JSONB
+
+  atualizarConfiguracoesInsulina(configs: ConfiguracoesInsulina): void {
+    this.configuracoesInsulina = configs;
+  }
 }

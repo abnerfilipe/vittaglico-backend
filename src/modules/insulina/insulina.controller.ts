@@ -3,7 +3,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse, ApiBadRequest
 import { CreateInsulinaDto } from "./dto/create-insulina.dto";
 import { ListInsulinaDto } from "./dto/list-insulina.dto";
 import { UpdateInsulinaDto } from "./dto/update-insulina.dto";
-import { InsulinaService } from "./insulina.service";
+import { InsulinaService } from "./services/insulina.service";
 import { AuthGuard } from "../auth/auth.guard";
 
 @ApiTags('insulina')

@@ -1,63 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ConfiguracoesInsulinaDTO } from './ConfiguracoesInsulina.dto';
 
 export class ListaUsuarioDTO {
-  @ApiProperty({
-    description: 'ID único do usuário',
-    example: 'uuid'
-  })
-  readonly id: string;
+  @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
+  id: string;
 
-  @ApiProperty({
-    description: 'Nome completo do usuário',
-    example: 'João'
-  })
-  readonly nome: string;
+  @ApiProperty({ description: 'Nome do usuário', example: 'João da Silva' })
+  nome: string;
 
-  @ApiProperty({
-    description: 'Endereço de email do usuário',
-    example: 'joao@email.com'
-  })
-  readonly email: string;
+  @ApiProperty({ description: 'Email do usuário', example: 'joao@example.com' })
+  email: string;
 
-  @ApiProperty({
-    description: 'Data de nascimento do usuário no formato DD/MM/AAAA',
-    example: '01/02/1990'
-  })
-  readonly dataDeNascimento: string;
+  @ApiProperty({ description: 'Data de nascimento do usuário', example: '10/02/1990' })
+  dataDeNascimento: string;
 
-  @ApiProperty({
-    description: 'Número de telefone do usuário',
-    example: '11999999999'
-  })
-  readonly telefone: string;
+  @ApiProperty({ description: 'Telefone do usuário', example: '5511999999999' })
+  telefone: string;
 
-  @ApiProperty({
-    description: 'Data de criação do registro',
-    example: '2025-07-15T10:30:00Z'
-  })
-  readonly createdAt?: string;
+  @ApiProperty({ description: 'Data de criação do usuário' })
+  createdAt: string;
 
-  @ApiProperty({
-    description: 'Data da última atualização do registro',
-    example: '2025-07-15T10:30:00Z'
-  })
-  readonly updatedAt?: string;
+  @ApiProperty({ description: 'Data de atualização do usuário' })
+  updatedAt: string;
 
-  constructor(
-    id: string,
-    nome: string,
-    email: string,
-    dataDeNascimento: string,
-    telefone: string,
-    createdAt?: string,
-    updatedAt?: string,
-  ) {
-    this.id = id;
-    this.nome = nome;
-    this.email = email;
-    this.dataDeNascimento = dataDeNascimento;
-    this.telefone = telefone;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+  @ApiProperty({ description: 'Configurações de insulina do usuário', required: false })
+  configuracoesInsulina?: ConfiguracoesInsulinaDTO;
 }

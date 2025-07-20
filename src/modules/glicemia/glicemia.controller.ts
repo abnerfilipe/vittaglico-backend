@@ -23,14 +23,14 @@ import {
 import { GlicemiaService } from './glicemia.service';
 import { CreateGlicemiaDto } from './dto/create-glicemia.dto';
 import { UpdateGlicemiaDto } from './dto/update-glicemia.dto';
-import { GlicemiaEntity } from './entities/glicemia.entity';
+import { Glicemia } from './entities/glicemia.entity';
 import { ListGlicemiaDto } from './dto/list-glicemia.dto';
 
 @ApiTags('glicemia')
 @ApiExtraModels(
   CreateGlicemiaDto,
   UpdateGlicemiaDto,
-  GlicemiaEntity,
+  Glicemia,
   ListGlicemiaDto,
 )
 @ApiBearerAuth('bearer')
@@ -132,7 +132,7 @@ export class GlicemiaController {
     return { message: 'Glicemia removida com sucesso' };
   }
 
-  private mapToDto(glicemia: GlicemiaEntity): ListGlicemiaDto {
+  private mapToDto(glicemia: Glicemia): ListGlicemiaDto {
     return {
       id: glicemia.id,
       usuarioId: glicemia.usuario.id,

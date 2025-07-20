@@ -12,7 +12,7 @@ import {
 import { PeriodoEnum } from '../enum/periodo.enum';
 
 @Entity({ name: 'glicemias' })
-export class GlicemiaEntity {
+export class Glicemia {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,7 +29,7 @@ export class GlicemiaEntity {
   @Column({ name: 'medida', default: 'mg/dL', nullable: false })
   medida: string;
 
-  @Column({ name: 'periodo', type: 'enum', enum: PeriodoEnum, nullable: true })
+  @Column({ name: 'periodo', type: 'enum', enum: PeriodoEnum, nullable: false })
   periodo: PeriodoEnum;
 
   @Column({ name: 'data_hora_de_registro', type: Date, nullable: false, default: () => 'CURRENT_TIMESTAMP' })
@@ -43,4 +43,19 @@ export class GlicemiaEntity {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string;
+
+  constructor(
+    valor?: number,
+    usuarioId?: string,
+    dataHoraDeRegistro?: Date,
+    periodo?: PeriodoEnum,
+    medida?: string,
+  ) {
+    if (valor !== undefined) this.valor = valor;
+    if (usuarioId !== undefined) this.usuarioId = usuarioId;
+    if (dataHoraDeRegistro !== undefined) this.dataHoraDeRegistro = dataHoraDeRegistro.toISOString();
+    if (medida !== undefined) this.medida = medida;
+    else if (this.medida === undefined) this.medida = 'mg/dL';
+    if (periodo !== undefined) this.periodo = periodo;
+  }
 }

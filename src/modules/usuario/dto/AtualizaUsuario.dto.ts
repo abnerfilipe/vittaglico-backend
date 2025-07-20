@@ -1,78 +1,31 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
-import { EmailEhUnico } from '../validacao/email-eh-unico.validator';
-import { TelefoneEhUnico } from '../validacao/telefone-eh-unico.validator';
-import { CriaUsuarioDTO } from './CriaUsuario.dto';
-import { Transform } from 'class-transformer';
-import { Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { ConfiguracoesInsulinaDTO } from './ConfiguracoesInsulina.dto';
 
 export class AtualizaUsuarioDTO {
-  @ApiProperty({
-    description: 'Nome completo do usuário',
-    example: 'João da Silva',
-    required: false
-  })
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @ApiProperty({ description: 'Nome do usuário', example: 'João da Silva', required: false })
+  @IsString()
   @IsOptional()
-  @IsNotEmpty({ message: 'O nome não pode ser vazio' })
   nome?: string;
 
-  @ApiProperty({
-    description: 'Nome de usuário único para login (entre 4 e 15 caracteres)',
-    example: 'joao123',
-    required: false,
-    minLength: 4,
-    maxLength: 15
-  })
-
-  @ApiProperty({
-    description: 'Endereço de email único do usuário',
-    example: 'joao@email.com',
-    required: false,
-    format: 'email'
-  })
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @ApiProperty({ description: 'Email do usuário', example: 'joao@example.com', required: false })
+  @IsEmail({}, { message: 'O e-mail informado é inválido' })
   @IsOptional()
-  @IsEmail(undefined, { message: 'O e-mail informado é inválido' })
-  @EmailEhUnico({ message: 'Já existe um usuário com este e-mail' })
   email?: string;
 
-  @ApiProperty({
-    description: 'Senha do usuário (mínimo 6 caracteres)',
-    example: 'senha123',
-    required: false,
-    minLength: 6,
-    writeOnly: true
-  })
-  @IsOptional()
-  @Transform(({ value }) => value === '' ? undefined : value)
-  @MinLength(6, { message: 'A senha precisa ter pelo menos 6 caracteres' })
-  senha?: string;
-
-  @ApiProperty({
-    description: 'Número de telefone do usuário (entre 8 e 20 caracteres)',
-    example: '11999999999',
-    required: false,
-    minLength: 8,
-    maxLength: 20
-  })
-  @Transform(({ value }) => value === '' ? undefined : value)
-  @IsOptional()
-  @IsNotEmpty({ message: 'O telefone não pode ser vazio' })
+  @ApiProperty({ description: 'Telefone do usuário', example: '5511999999999', required: false })
   @IsString()
   @Length(8, 20, { message: 'O telefone deve ter entre 8 e 20 caracteres' })
-  @TelefoneEhUnico({ message: 'Já existe um usuário com este telefone' })
+  @IsOptional()
   telefone?: string;
 
-  @ApiProperty({
-    description: 'Data de nascimento no formato DD/MM/AAAA',
-    example: '01/02/1990',
-    required: false,
-    format: 'date'
-  })
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @ApiProperty({ description: 'Data de nascimento do usuário', example: '10/02/1990', required: false })
+  @IsString()
+  @Matches(/^(\d{2})\/(\d{2})\/(\d{4})$/, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
   @IsOptional()
-  @IsDateString({}, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
   dataDeNascimento?: string;
 
+  @ApiProperty({ description: 'Configurações de insulina do usuário', required: false })
+  @IsOptional()
+  configuracoesInsulina?: ConfiguracoesInsulinaDTO;
 }

@@ -25,14 +25,16 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '../../core/decorators/public.decorator';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
-import { AtualizaUsuarioResponseDTO } from './dto/AtualizaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { AtualizaUsuarioResponseDTO } from './dto/AtualizaUsuarioResponse.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
-import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto'; // Você precisará criar este DTO
+import { CriaUsuarioResponseDTO } from './dto/CriaUsuarioResponse.dto';
 import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
-import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto'; // Você precisará criar este DTO
-import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto'; // Você precisará criar este DTO
+import { ListaUsuariosResponseDTO } from './dto/ListaUsuariosResponse.dto';
+import { RemoveUsuarioResponseDTO } from './dto/RemoveUsuarioResponse.dto';
 import { UsuarioService } from './usuario.service';
 import { HashearSenhaPipe } from '../../core/pipes/hashear-senha.pipe';
+import { ConfiguracoesInsulinaDTO } from './dto/ConfiguracoesInsulina.dto';
+import { plainToInstance } from 'class-transformer';
 
 @ApiTags('usuario')
 @ApiExtraModels(
@@ -42,7 +44,8 @@ import { HashearSenhaPipe } from '../../core/pipes/hashear-senha.pipe';
   CriaUsuarioResponseDTO, 
   ListaUsuariosResponseDTO, 
   AtualizaUsuarioResponseDTO, 
-  RemoveUsuarioResponseDTO
+  RemoveUsuarioResponseDTO,
+  ConfiguracoesInsulinaDTO // Adicione ConfiguracoesInsulinaDTO aqui
 )
 @ApiBearerAuth('bearer')
 @Controller('/usuario')
@@ -65,20 +68,6 @@ export class UsuarioController {
   @ApiCreatedResponse({
     description: 'Usuário criado com sucesso.',
     type: CriaUsuarioResponseDTO,
-    schema: {
-      example: {
-        messagem: 'usuário criado com sucesso',
-        usuario: {
-          id: 'uuid',
-          nome: 'João',
-          email: 'joao@email.com',
-          dataDeNascimento: '1990-01-01',
-          telefone: '11999999999',
-          createdAt: '2025-07-15T10:30:00Z',
-          updatedAt: '2025-07-15T10:30:00Z',
-        }
-      }
-    }
   })
   @ApiBadRequestResponse({ 
     description: 'Dados inválidos para criação.',
@@ -105,18 +94,21 @@ export class UsuarioController {
       senha: senhaHasheada,
     });
 
-    return {
-      messagem: 'usuário criado com sucesso',
-      usuario: new ListaUsuarioDTO(
-        usuarioCriado.id,
-        usuarioCriado.nome,
-        usuarioCriado.email,
-        usuarioCriado.dataDeNascimento,
-        usuarioCriado.telefone,
-        usuarioCriado.createdAt,
-        usuarioCriado.updatedAt,
-      ),
-    };
+    const listaUsuario = new ListaUsuarioDTO()
+    listaUsuario.id = usuarioCriado.id
+    listaUsuario.nome = usuarioCriado.nome
+    listaUsuario.email = usuarioCriado.email
+    listaUsuario.dataDeNascimento = usuarioCriado.dataDeNascimento
+    listaUsuario.telefone = usuarioCriado.telefone
+    listaUsuario.createdAt = usuarioCriado.createdAt
+    listaUsuario.updatedAt = usuarioCriado.updatedAt
+    listaUsuario.configuracoesInsulina = usuarioCriado.configuracoesInsulina ? plainToInstance(ConfiguracoesInsulinaDTO, usuarioCriado.configuracoesInsulina) : undefined
+
+    const criaUsuarioResponse = new CriaUsuarioResponseDTO()
+    criaUsuarioResponse.messagem = 'usuário criado com sucesso'
+    criaUsuarioResponse.usuario = listaUsuario
+
+    return criaUsuarioResponse
   }
 
   @Get()
@@ -141,27 +133,28 @@ export class UsuarioController {
   @ApiOkResponse({
     description: 'Usuários obtidos com sucesso.',
     type: ListaUsuariosResponseDTO,
-    schema: {
-      properties: {
-        mensagem: { 
-          type: 'string', 
-          example: 'Usuários obtidos com sucesso.'
-        },
-        usuarios: { 
-          type: 'array',
-          items: { $ref: getSchemaPath(ListaUsuarioDTO) }
-        }
-      }
-    }
   })
   async listUsuarios() {
     const usuariosSalvos = await this.usuarioService.listUsuarios();
 
-    return {
-      mensagem: 'Usuários obtidos com sucesso.',
-      usuarios: usuariosSalvos,
-    };
+    const listaUsuariosResponse = new ListaUsuariosResponseDTO()
+    listaUsuariosResponse.mensagem = 'Usuários obtidos com sucesso.'
+    listaUsuariosResponse.usuarios = usuariosSalvos.map(usuario => {
+      const listaUsuario = new ListaUsuarioDTO()
+      listaUsuario.id = usuario.id
+      listaUsuario.nome = usuario.nome
+      listaUsuario.email = usuario.email
+      listaUsuario.dataDeNascimento = usuario.dataDeNascimento
+      listaUsuario.telefone = usuario.telefone
+      listaUsuario.createdAt = usuario.createdAt
+      listaUsuario.updatedAt = usuario.updatedAt
+      listaUsuario.configuracoesInsulina = usuario.configuracoesInsulina ? plainToInstance(ConfiguracoesInsulinaDTO, usuario.configuracoesInsulina) : undefined
+      return listaUsuario
+    })
+
+    return listaUsuariosResponse
   }
+
   @Put()
   @ApiOperation({
     summary: 'Atualiza os dados do próprio usuário autenticado',
@@ -176,22 +169,6 @@ export class UsuarioController {
   @ApiOkResponse({
     description: 'Usuário atualizado com sucesso.',
     type: AtualizaUsuarioResponseDTO,
-    schema: {
-      example: {
-        messagem: 'usuário atualizado com sucesso',
-        usuario: {
-          id: 'uuid',
-          nome: 'João',
-          email: 'joao@email.com',
-          dataDeNascimento: '1990-01-01',
-          telefone: '11999999999',
-          aceiteTermosCondicoes: true,
-          aceitePoliticaDePrivacidade: true,
-          createdAt: '2025-07-15T10:30:00Z',
-          updatedAt: '2025-07-15T10:30:00Z',
-        },
-      },
-    },
   })
   @ApiNotFoundResponse({
     description: 'Usuário não encontrado.',
@@ -228,10 +205,21 @@ export class UsuarioController {
       novosDados,
     );
 
-    return {
-      messagem: 'usuário atualizado com sucesso',
-      usuario: usuarioAtualizado,
-    };
+    const listaUsuario = new ListaUsuarioDTO()
+    listaUsuario.id = usuarioAtualizado.id
+    listaUsuario.nome = usuarioAtualizado.nome
+    listaUsuario.email = usuarioAtualizado.email
+    listaUsuario.dataDeNascimento = usuarioAtualizado.dataDeNascimento
+    listaUsuario.telefone = usuarioAtualizado.telefone
+    listaUsuario.createdAt = usuarioAtualizado.createdAt
+    listaUsuario.updatedAt = usuarioAtualizado.updatedAt
+    listaUsuario.configuracoesInsulina = usuarioAtualizado.configuracoesInsulina ? plainToInstance(ConfiguracoesInsulinaDTO, usuarioAtualizado.configuracoesInsulina) : undefined
+
+    const atualizaUsuarioResponse = new AtualizaUsuarioResponseDTO()
+    atualizaUsuarioResponse.messagem = 'usuário atualizado com sucesso'
+    atualizaUsuarioResponse.usuario = listaUsuario
+
+    return atualizaUsuarioResponse
   }
 
   @Delete('/:id')
@@ -249,20 +237,6 @@ export class UsuarioController {
   @ApiOkResponse({
     description: 'Usuário removido com sucesso.',
     type: RemoveUsuarioResponseDTO,
-    schema: {
-      example: {
-        messagem: 'usuário removido com sucesso',
-        usuario: {
-          id: 'uuid',
-          nome: 'João',
-          email: 'joao@email.com',
-          dataDeNascimento: '1990-01-01',
-          telefone: '11999999999',
-          createdAt: '2025-07-15T10:30:00Z',
-          updatedAt: '2025-07-15T10:30:00Z',
-        }
-      }
-    }
   })
   @ApiNotFoundResponse({ 
     description: 'Usuário não encontrado.',
@@ -277,10 +251,20 @@ export class UsuarioController {
   async removeUsuario(@Param('id') id: string) {
     const usuarioRemovido = await this.usuarioService.deletaUsuario(id);
 
-    return {
-      messagem: 'usuário removido com sucesso',
-      usuario: usuarioRemovido,
-    };
+    const listaUsuario = new ListaUsuarioDTO()
+    listaUsuario.id = usuarioRemovido.id
+    listaUsuario.nome = usuarioRemovido.nome
+    listaUsuario.email = usuarioRemovido.email
+    listaUsuario.dataDeNascimento = usuarioRemovido.dataDeNascimento
+    listaUsuario.telefone = usuarioRemovido.telefone
+    listaUsuario.createdAt = usuarioRemovido.createdAt
+    listaUsuario.updatedAt = usuarioRemovido.updatedAt
+    listaUsuario.configuracoesInsulina = usuarioRemovido.configuracoesInsulina ? plainToInstance(ConfiguracoesInsulinaDTO, usuarioRemovido.configuracoesInsulina) : undefined
+
+    const removeUsuarioResponse = new RemoveUsuarioResponseDTO()
+    removeUsuarioResponse.messagem = 'usuário removido com sucesso'
+
+    return removeUsuarioResponse
   }
 
   @Get('/:id')
@@ -298,17 +282,6 @@ export class UsuarioController {
   @ApiOkResponse({
     description: 'Usuário encontrado com sucesso.',
     type: ListaUsuarioDTO,
-    schema: {
-      example: {
-        id: 'uuid',
-        nome: 'João',
-        email: 'joao@email.com',
-        dataDeNascimento: '1990-01-01',
-        telefone: '11999999999',
-        createdAt: '2025-07-15T10:30:00Z',
-        updatedAt: '2025-07-15T10:30:00Z',
-      }
-    }
   })
   @ApiNotFoundResponse({ 
     description: 'Usuário não encontrado.',
@@ -323,14 +296,16 @@ export class UsuarioController {
   async buscaUsuarioPorId(@Param('id') id: string) {
     const usuario = await this.usuarioService.buscaPorId(id);
     
-    return new ListaUsuarioDTO(
-      usuario.id,
-      usuario.nome,
-      usuario.email,
-      usuario.dataDeNascimento,
-      usuario.telefone,
-      usuario.createdAt,
-      usuario.updatedAt,
-    );
+    const listaUsuario = new ListaUsuarioDTO()
+    listaUsuario.id = usuario.id
+    listaUsuario.nome = usuario.nome
+    listaUsuario.email = usuario.email
+    listaUsuario.dataDeNascimento = usuario.dataDeNascimento
+    listaUsuario.telefone = usuario.telefone
+    listaUsuario.createdAt = usuario.createdAt
+    listaUsuario.updatedAt = usuario.updatedAt
+    listaUsuario.configuracoesInsulina = usuario.configuracoesInsulina ? plainToInstance(ConfiguracoesInsulinaDTO, usuario.configuracoesInsulina) : undefined
+
+    return listaUsuario
   }
 }

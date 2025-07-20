@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Insulina } from './entities/insulina.entity';
-import { CreateInsulinaDto } from './dto/create-insulina.dto';
-import { UpdateInsulinaDto } from './dto/update-insulina.dto';
-import { ListInsulinaDto } from './dto/list-insulina.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CreateInsulinaDto } from "../dto/create-insulina.dto";
+import { ListInsulinaDto } from "../dto/list-insulina.dto";
+import { UpdateInsulinaDto } from "../dto/update-insulina.dto";
+import { Insulina } from "../entities/insulina.entity";
 
 @Injectable()
 export class InsulinaService {
