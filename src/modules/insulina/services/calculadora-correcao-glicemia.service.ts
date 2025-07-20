@@ -44,7 +44,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     usuarioId: string,
     valorGlicemiaAtual?: number,
     glicemiaId?: string,
-  ): Promise<number> {
+  ): Promise<{ bolus: number; message: string }> {
     // Verificar se o usuário existe e buscar suas configurações
     const usuario = await this.usuarioService.buscaPorId(usuarioId);
     if (!usuario) {
@@ -88,7 +88,7 @@ export class CalculadoraCorrecaoGlicemiaService {
 
     // Apenas aplica correção se a glicose atual for maior que a glicose alvo
     if (glicoseAtual <= glicoseAlvo) {
-      return 0; // Nenhuma correção necessária
+      return { bolus: 0, message: 'Nenhuma correção necessária.' };
     }
 
     const correcaoBruta = (glicoseAtual - glicoseAlvo) / fsi;
@@ -100,9 +100,19 @@ export class CalculadoraCorrecaoGlicemiaService {
     const insulinaAtiva = this.calcularInsulinaAtiva(aplicacoesRecentes, dataHoraAtual);
 
     // Ajustar o bolus considerando insulina ativa
-    const bolusFinal = correcaoBruta - insulinaAtiva;
+    let bolusFinal = correcaoBruta - insulinaAtiva;
 
-    // Garante que o bolus não seja negativo
-    return Math.max(0, bolusFinal);
+    let message = '';
+
+    if (bolusFinal < 0) {
+      bolusFinal = 0;
+      message = `Bolus de correção foi ajustado para 0 devido à insulina ativa. Correção bruta: ${correcaoBruta.toFixed(2)}, Insulina ativa: ${insulinaAtiva.toFixed(2)}.`;
+    } else {
+      message = `Bolus de correção calculado. Correção bruta: ${correcaoBruta.toFixed(2)}, Insulina ativa: ${insulinaAtiva.toFixed(2)}, Bolus final: ${bolusFinal.toFixed(2)}.`;
+    }
+
+    bolusFinal = Math.ceil(bolusFinal * 100) / 100;
+
+    return { bolus: bolusFinal, message };
   }
 }

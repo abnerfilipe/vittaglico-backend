@@ -12,7 +12,7 @@ import {
 import { Glicemia } from '../../glicemia/entities/glicemia.entity';
 import { AplicacaoInsulina } from '../../insulina/entities/aplicacao-insulina.entity';
 import { Insulina } from '../../insulina/entities/insulina.entity';
-import type { ConfiguracoesInsulina } from './configuracoes-insulina';
+import { ConfiguracoesInsulina } from './configuracoes-insulina';
 
 @Entity({ name: 'usuarios' })
 export class Usuario {
@@ -56,14 +56,10 @@ export class Usuario {
   @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.usuario, { cascade: ['insert', 'update'] })
   aplicacoesInsulina: AplicacaoInsulina[];
 
-  // Relacionamento com Insulina (antigo TipoInsulina)
   @OneToMany(() => Insulina, (insulina) => insulina.usuario, { cascade: ['insert', 'update'] })
-  insulinas: Insulina[]; // Renomeado para 'insulinas'
+  insulinas: Insulina[];
 
-  @Column({ type: 'jsonb', nullable: true })
-  configuracoesInsulina: ConfiguracoesInsulina | null; // Armazenado como JSONB
+  @Column({ name: 'configuracoes_insulina', type: 'jsonb', nullable: true })
+  configuracoesInsulina: ConfiguracoesInsulina | null;
 
-  atualizarConfiguracoesInsulina(configs: ConfiguracoesInsulina): void {
-    this.configuracoesInsulina = configs;
-  }
 }

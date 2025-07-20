@@ -194,7 +194,7 @@ export class UsuarioController {
     @Headers('Authorization') authorization: string,
     @Body() novosDados: AtualizaUsuarioDTO,
   ) {
-    const token = authorization?.replace('Bearer ', '')[0];
+    const token = authorization?.split(' ')[1];
     const usuarioId = await this.usuarioService.buscarUsuarioIdPeloTokens(token);
     if (!usuarioId) {
       throw new NotFoundException('Usuário autenticado não encontrado.');

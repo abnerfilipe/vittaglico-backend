@@ -13,7 +13,7 @@ export class UsuarioService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-    @InjectRepository(TokenEntity) 
+    @InjectRepository(TokenEntity)
     private readonly tokenRepository: Repository<TokenEntity>,
   ) { }
 
@@ -26,7 +26,7 @@ export class UsuarioService {
   }
 
   async listUsuarios() {
-    const usuariosSalvos = await this.usuarioRepository.find();
+    const usuariosSalvos = await this.usuarioRepository.find({ });
     const usuariosLista = usuariosSalvos.map(
       (usuario) => {
         const listaUsuario = new ListaUsuarioDTO();
@@ -56,14 +56,18 @@ export class UsuarioService {
   }
 
   async buscaPorId(id: string) {
-    const usuario = await this.usuarioRepository.findOneBy({ id });
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id },
+    });
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
     return usuario;
   }
-  
+
   async buscaPorNome(nome: string) {
-    const usuario = await this.usuarioRepository.findOneBy({ nome });
+    const usuario = await this.usuarioRepository.findOne({
+      where: { nome },
+    });
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
     return usuario;
@@ -92,13 +96,17 @@ export class UsuarioService {
     return usuario;
   }
   async buscaPorTelefone(telefone: string) {
-    const usuario = await this.usuarioRepository.findOneBy({ telefone });
+    const usuario = await this.usuarioRepository.findOne({
+      where: { telefone }
+    });
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
     return usuario;
   }
   async buscaPorDataDeNascimento(dataDeNascimento: string) {
-    const usuario = await this.usuarioRepository.findOneBy({ dataDeNascimento });
+    const usuario = await this.usuarioRepository.findOne({
+      where: { dataDeNascimento }
+    });
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
     return usuario;

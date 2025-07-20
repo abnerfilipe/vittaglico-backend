@@ -18,6 +18,7 @@ export class CreateAplicacaoInsulinaDto {
     }
     return value;
   })
+  @ApiProperty({ description: 'Data e hora da aplicação', example: 'DD/MM/YYYY HH:mm:ss' })
   @IsString({ message: 'A data e hora da aplicação deve ser uma string no formato DD/MM/YYYY HH:mm:ss' })
   @IsNotEmpty({ message: 'A data e hora da aplicação não pode ser vazia' })
   dataHoraAplicacao: string;

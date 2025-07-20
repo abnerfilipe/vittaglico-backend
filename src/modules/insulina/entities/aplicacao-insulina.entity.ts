@@ -27,7 +27,6 @@ export class AplicacaoInsulina {
   @Column({ name: 'insulina_id', nullable: true })
   insulinaId: string | null;
 
-  @Column('float')
+  @Column('float', { name: 'duracao_acao_insulina_efetiva' })
   duracaoAcaoInsulinaEfetiva: number; // DAI no momento da aplicação (em horas)
-
 }

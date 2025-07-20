@@ -34,9 +34,7 @@ export class Insulina {
   @Column({ name: 'usuario_id' })
   usuarioId: string;
 
-  @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.insulinaAssociada)
+  @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.insulinaAssociada, { cascade: true })
   aplicacoes: AplicacaoInsulina[];
-
-  
 
 }

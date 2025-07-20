@@ -10,6 +10,7 @@ export class CreateInsulinaDto {
   nome: string;
 
   @ApiProperty({ description: 'Tipo da insulina (Basal ou Bolus)', example: 'BOLUS', enum: TipoInsulinaEnum })
+  @IsString()
   @IsEnum(TipoInsulinaEnum)
   tipoBasalBolus: TipoInsulinaEnum;
 

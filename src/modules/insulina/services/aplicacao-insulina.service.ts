@@ -18,7 +18,12 @@ export class AplicacaoInsulinaService {
   ) {}
 
   async create(createAplicacaoInsulinaDto: CreateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
-    const aplicacaoInsulina = this.aplicacaoInsulinaRepository.create(createAplicacaoInsulinaDto);
+    const insulina = await this.insulinaService.findOne(createAplicacaoInsulinaDto.insulinaId);
+
+    const aplicacaoInsulina = this.aplicacaoInsulinaRepository.create({
+      ...createAplicacaoInsulinaDto,
+      duracaoAcaoInsulinaEfetiva: insulina.duracaoAcaoHoras, // Garante que o valor seja preenchido
+    });
     const savedAplicacaoInsulina = await this.aplicacaoInsulinaRepository.save(aplicacaoInsulina);
 
     if (!savedAplicacaoInsulina.insulinaId) {
@@ -34,8 +39,6 @@ export class AplicacaoInsulinaService {
         picoAcaoHoras: undefined,
       };
     }
-
-    const insulina = await this.insulinaService.findOne(savedAplicacaoInsulina.insulinaId);
 
     return {
       id: savedAplicacaoInsulina.id,

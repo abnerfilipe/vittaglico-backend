@@ -16,17 +16,17 @@ export class CalcularBolusDto {
     description: 'Glicose atual do paciente em mg/dL (opcional se glicemiaId for fornecido)',
     example: 150,
   })
-  @IsNumber({}, { message: 'Glicose atual deve ser um número válido' })
   @IsOptional()
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => value === 0 ? undefined : value)
+  @IsNumber({}, { message: 'Glicose atual deve ser um número válido' })
   glicoseAtual?: number;
 
   @ApiPropertyOptional({
     description: 'ID de uma medição de glicemia específica (opcional)',
     example: 'uuid',
   })
-  @IsUUID()
   @IsOptional()
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @IsUUID()
+  @Transform(({ value }) => value === '' || value === null || value == "null" ? undefined : value)
   glicemiaId?: string;
 }

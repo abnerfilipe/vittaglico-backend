@@ -7,6 +7,7 @@ export class AtualizaUsuarioDTO {
   @ApiProperty({ description: 'Nome do usuário', example: 'João da Silva', required: false })
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   nome?: string;
 
   @ApiProperty({ description: 'Email do usuário', example: 'joao@example.com', required: false })

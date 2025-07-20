@@ -46,11 +46,12 @@ export class AplicacaoInsulinaController {
     try {
       const bolus = await this.calculadoraCorrecaoGlicemiaService.calcularBolusCorrecao(
         calcularBolusDto.usuarioId,
-        calcularBolusDto.glicoseAtual,
-        calcularBolusDto.glicemiaId,
+        calcularBolusDto?.glicoseAtual,
+        calcularBolusDto?.glicemiaId,
       );
       return { bolusCorrecao: bolus };
     } catch (error) {
+      console.error(error)
       if (error instanceof HttpException) {
         throw error; // Re-lança exceções HTTP pré-definidas (NotFound, etc.)
       }

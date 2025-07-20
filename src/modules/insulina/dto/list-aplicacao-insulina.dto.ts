@@ -10,7 +10,7 @@ export class ListAplicacaoInsulinaDto {
   quantidadeUnidades: number;
 
   @ApiProperty({ description: 'Data e hora da aplicação', example: 'DD/MM/YYYY HH:mm:ss' })
-  @Transform(({ value }) => {
+   @Transform(({ value }) => {
     if (!value || typeof value !== 'string') return undefined;
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
     const match = value.match(regex);
