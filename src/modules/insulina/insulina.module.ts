@@ -15,10 +15,13 @@ import { GlicemiaModule } from '../glicemia/glicemia.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Usuario, Glicemia, Insulina, AplicacaoInsulina]),
+    TypeOrmModule.forFeature([
+      Insulina, 
+      AplicacaoInsulina
+    ]),
     AuthModule,
-    UsuarioModule,  // Importar o UsuarioModule
-    GlicemiaModule, // Importar o GlicemiaModule
+    UsuarioModule,  
+    GlicemiaModule, 
   ],
   controllers: [
     InsulinaController, 
