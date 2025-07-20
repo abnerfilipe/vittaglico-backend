@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ListaUsuarioDTO } from './dto/ListaUsuario.dto';
-import { UsuarioEntity } from './usuario.entity';
+import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
 import { AtualizaUsuarioDTO } from './dto/AtualizaUsuario.dto';
 import { CriaUsuarioDTO } from './dto/CriaUsuario.dto';
@@ -10,16 +10,16 @@ import { TokenEntity } from '../auth/token.entity';
 @Injectable()
 export class UsuarioService {
   constructor(
-    @InjectRepository(UsuarioEntity)
-    private readonly usuarioRepository: Repository<UsuarioEntity>,
+    @InjectRepository(Usuario)
+    private readonly usuarioRepository: Repository<Usuario>,
     @InjectRepository(TokenEntity) 
     private readonly tokenRepository: Repository<TokenEntity>,
   ) { }
 
   async criaUsuario(dadosDoUsuario: CriaUsuarioDTO) {
-    const usuarioEntity = new UsuarioEntity();
+    const usuarioEntity = new Usuario();
 
-    Object.assign(usuarioEntity, dadosDoUsuario as UsuarioEntity);
+    Object.assign(usuarioEntity, dadosDoUsuario as Usuario);
 
     return this.usuarioRepository.save(usuarioEntity);
   }
@@ -63,7 +63,7 @@ export class UsuarioService {
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
 
-    Object.assign(usuario, novosDados as UsuarioEntity);
+    Object.assign(usuario, novosDados as Usuario);
 
     return this.usuarioRepository.save(usuario);
   }

@@ -1,4 +1,4 @@
-import { UsuarioEntity } from '../../usuario/usuario.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 import {
   Column,
   CreateDateColumn,
@@ -16,9 +16,12 @@ export class GlicemiaEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => UsuarioEntity, (usuario) => usuario.glicemias, { nullable: false })
+  @ManyToOne(() => Usuario, (usuario) => usuario.glicemias, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'usuario_id' })
-  usuario: UsuarioEntity;
+  usuario: Usuario;
+
+  @Column({ name: 'usuario_id', nullable: false })
+  usuarioId: string;
 
   @Column({ name: 'valor', nullable: false })
   valor: number;

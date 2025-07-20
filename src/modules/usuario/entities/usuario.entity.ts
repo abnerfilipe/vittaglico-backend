@@ -9,10 +9,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
-import { GlicemiaEntity } from '../glicemia/entities/glicemia.entity';
+import { GlicemiaEntity } from '../../glicemia/entities/glicemia.entity';
+import { AplicacaoInsulina } from '../../insulina/entities/aplicacao-insulina.entity';
+import { Insulina } from '../../insulina/entities/insulina.entity';
 
 @Entity({ name: 'usuarios' })
-export class UsuarioEntity {
+export class Usuario {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -49,4 +51,12 @@ export class UsuarioEntity {
 
   @OneToMany(() => GlicemiaEntity, (glicemia) => glicemia.usuario)
   glicemias: GlicemiaEntity[];
+
+  @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.usuario, { cascade: ['insert', 'update'] })
+  aplicacoesInsulina: AplicacaoInsulina[];
+
+  // Relacionamento com Insulina (antigo TipoInsulina)
+  @OneToMany(() => Insulina, (insulina) => insulina.usuario, { cascade: ['insert', 'update'] })
+  insulinas: Insulina[]; // Renomeado para 'insulinas'
+
 }

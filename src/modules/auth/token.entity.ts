@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UsuarioEntity } from '../usuario/usuario.entity';
+import { Usuario } from '../usuario/entities/usuario.entity';
 
 @Entity({ name: 'tokens' })
 export class TokenEntity {
@@ -22,9 +22,9 @@ export class TokenEntity {
   @Column({ name: 'expires_at' })
   expiresAt: Date;
 
-  @ManyToOne(() => UsuarioEntity)
+  @ManyToOne(() => Usuario)
   @JoinColumn({ name: 'usuario_id' })
-  usuario: UsuarioEntity;
+  usuario: Usuario;
 
   @Column({ name: 'usuario_id' })
   usuarioId: string;

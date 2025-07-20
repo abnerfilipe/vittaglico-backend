@@ -1,0 +1,26 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, IsNumber, IsEnum, IsUUID } from 'class-validator';
+import { TipoInsulinaEnum } from '../enum/tipoInsulina.enum';
+
+export class CreateInsulinaDto {
+  @ApiProperty({ description: 'Nome da insulina', example: 'Humalog' })
+  @IsNotEmpty({ message: 'O nome da insulina não pode ser vazio' })
+  @IsString()
+  nome: string;
+
+  @ApiProperty({ description: 'Tipo da insulina (Basal ou Bolus)', example: 'BOLUS', enum: TipoInsulinaEnum })
+  @IsEnum(TipoInsulinaEnum)
+  tipoBasalBolus: TipoInsulinaEnum;
+
+  @ApiProperty({ description: 'Duração da ação em horas', example: 3 })
+  @IsNumber()
+  duracaoAcaoHoras: number;
+
+  @ApiProperty({ description: 'Pico de ação em horas (opcional)', example: 1.5, required: false })
+  @IsNumber()
+  picoAcaoHoras?: number;
+
+  @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
+  @IsUUID()
+  usuarioId: string;
+}

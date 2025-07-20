@@ -8,6 +8,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { GlicemiaModule } from './modules/glicemia/glicemia.module';
+import { InsulinaModule } from './modules/insulina/insulina.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { GlicemiaModule } from './modules/glicemia/glicemia.module';
     }),
     UsuarioModule,
     AuthModule,
-    GlicemiaModule
+    GlicemiaModule,
+    InsulinaModule,
   ],
   controllers: [],
   providers: [
