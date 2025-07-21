@@ -1,4 +1,4 @@
 export enum TipoInsulinaEnum {
-  BOLUS = 'Bolus',
+  CORRECAO = 'Correção',
   BASAL = 'Basal',
 }

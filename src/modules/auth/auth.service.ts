@@ -37,8 +37,8 @@ export class AuthService {
     
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
     
-    // Salva o token no banco de dados
-    const expiresInSeconds = 60 * 60; // 1 hora em segundos
+    
+    const expiresInSeconds = 60 * 60; 
     await this.tokenService.salvarToken(user.id, token, expiresInSeconds);
 
     return {
@@ -52,12 +52,12 @@ export class AuthService {
   
   async validateToken(token: string): Promise<boolean> {
     try {
-      // Verifica se o token é válido pelo JWT
+      
       await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
       
-      // Verifica se o token está salvo e não revogado no banco
+      
       return this.tokenService.verificarToken(token);
     } catch {
       return false;
@@ -66,11 +66,11 @@ export class AuthService {
   async validateTokenReturnPayload(token: string): Promise<UsuarioPayload | null> {
     try {
 
-      // Verifica se o token é válido pelo JWT
+      
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      // Verifica se o token está salvo e não revogado no banco
+      
       const isValid = await this.tokenService.verificarToken(token);
 
       return isValid ? (payload as UsuarioPayload) : null;

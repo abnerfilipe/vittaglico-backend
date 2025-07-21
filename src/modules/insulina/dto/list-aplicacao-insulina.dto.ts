@@ -31,7 +31,7 @@ export class ListAplicacaoInsulinaDto {
   @ApiProperty({ description: 'Nome da insulina', example: 'Humalog', required: false, nullable: true })
   nome?: string;
 
-  @ApiProperty({ description: 'Tipo da insulina (Basal ou Bolus)', example: 'BOLUS', enum: TipoInsulinaEnum, required: false, nullable: true })
+  @ApiProperty({ description: 'Tipo da insulina (Basal ou Correção)', example: 'Correção', enum: TipoInsulinaEnum, required: false, nullable: true })
   tipoBasalBolus?: TipoInsulinaEnum;
 
   @ApiProperty({ description: 'Duração da ação em horas', example: 3, required: false, nullable: true })

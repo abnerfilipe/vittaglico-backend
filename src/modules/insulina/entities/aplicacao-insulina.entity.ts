@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Insulina } from './insulina.entity'; // Importar a entidade Insulina renomeada
+import { Insulina } from './insulina.entity'; 
 import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity('aplicacoes_insulina')
@@ -28,5 +28,5 @@ export class AplicacaoInsulina {
   insulinaId: string | null;
 
   @Column('float', { name: 'duracao_acao_insulina_efetiva' })
-  duracaoAcaoInsulinaEfetiva: number; // DAI no momento da aplicação (em horas)
+  duracaoAcaoInsulinaEfetiva: number; 
 }

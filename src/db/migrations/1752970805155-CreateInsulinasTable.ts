@@ -48,7 +48,7 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
         await queryRunner.createForeignKey(
             'insulinas',
             new TableForeignKey({
-                name: 'fk_insulina_usuario', // Nome explícito para a constraint
+                name: 'fk_insulina_usuario', 
                 columnNames: ['usuario_id'],
                 referencedColumnNames: ['id'],
                 referencedTableName: 'usuarios',
@@ -58,7 +58,7 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // Em PostgreSQL, DROP TABLE CASCADE remove automaticamente todas as chaves estrangeiras
+        
         await queryRunner.query('DROP TABLE IF EXISTS insulinas CASCADE');
     }
 }

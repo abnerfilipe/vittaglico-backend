@@ -44,31 +44,28 @@ export class CreateAplicacoesInsulinaTable1678886500000 implements MigrationInte
             true,
         );
 
-        // Criar chave estrangeira com nome explícito para usuario_id
+        
         const usuarioFk = new TableForeignKey({
-            name: 'fk_aplicacao_usuario', // Nome explícito para a constraint
+            name: 'fk_aplicacao_usuario', 
             columnNames: ['usuario_id'],
             referencedColumnNames: ['id'],
             referencedTableName: 'usuarios',
             onDelete: 'CASCADE',
         });
         
-        // Criar chave estrangeira com nome explícito para insulina_id
         const insulinaFk = new TableForeignKey({
-            name: 'fk_aplicacao_insulina', // Nome explícito para a constraint
+            name: 'fk_aplicacao_insulina', 
             columnNames: ['insulina_id'],
             referencedColumnNames: ['id'],
             referencedTableName: 'insulinas',
             onDelete: 'SET NULL',
         });
 
-        // Adicionar as chaves estrangeiras
         await queryRunner.createForeignKey('aplicacoes_insulina', usuarioFk);
         await queryRunner.createForeignKey('aplicacoes_insulina', insulinaFk);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // Em PostgreSQL, DROP TABLE CASCADE remove automaticamente todas as chaves estrangeiras
         await queryRunner.query('DROP TABLE IF EXISTS aplicacoes_insulina CASCADE');
     }
 }

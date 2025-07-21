@@ -6,7 +6,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
-// Importa tipos do Fastify
+
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { RequisicaoComUsuario } from '../../modules/auth/auth.guard';
 
@@ -17,7 +17,7 @@ export class LoggerGlobalInterceptor implements NestInterceptor {
   intercept(contexto: ExecutionContext, next: CallHandler): Observable<any> {
     const contextoHttp = contexto.switchToHttp();
 
-    // Usa tipos do Fastify
+    
     const requisicao = contextoHttp.getRequest<FastifyRequest | RequisicaoComUsuario>();
     const resposta = contextoHttp.getResponse<FastifyReply>();
 

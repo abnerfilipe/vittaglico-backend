@@ -13,6 +13,11 @@ export class InsulinaService {
     private readonly insulinaRepository: Repository<Insulina>,
   ) {}
 
+  /**
+   * Cria uma nova insulina.
+   * @param createInsulinaDto Dados para criação da insulina.
+   * @returns Dados da insulina criada.
+   */
   async create(createInsulinaDto: CreateInsulinaDto): Promise<ListInsulinaDto> {
     const insulina = await this.insulinaRepository.save(this.insulinaRepository.create(createInsulinaDto));
     return {
@@ -25,6 +30,11 @@ export class InsulinaService {
     };
   }
 
+  /**
+   * Busca todas as insulinas de um usuário.
+   * @param usuarioId ID do usuário.
+   * @returns Lista de insulinas do usuário.
+   */
   async findAll(usuarioId: string): Promise<ListInsulinaDto[]> {
     const insulinas = await this.insulinaRepository.find({ where: { usuarioId } });
     return insulinas.map(insulina => ({
@@ -37,6 +47,12 @@ export class InsulinaService {
     }));
   }
 
+  /**
+   * Busca uma insulina pelo ID.
+   * @param id ID da insulina.
+   * @returns Dados da insulina encontrada.
+   * @throws NotFoundException se a insulina não for encontrada.
+   */
   async findOne(id: string): Promise<ListInsulinaDto> {
     const insulina = await this.insulinaRepository.findOneBy({ id });
     if (!insulina) {
@@ -52,6 +68,13 @@ export class InsulinaService {
     };
   }
 
+  /**
+   * Atualiza uma insulina existente.
+   * @param id ID da insulina.
+   * @param updateInsulinaDto Dados para atualização.
+   * @returns Dados da insulina atualizada.
+   * @throws NotFoundException se a insulina não for encontrada.
+   */
   async update(id: string, updateInsulinaDto: UpdateInsulinaDto): Promise<ListInsulinaDto> {
     const insulina = await this.insulinaRepository.findOneBy({ id });
     if (!insulina) {
@@ -72,6 +95,11 @@ export class InsulinaService {
     };
   }
 
+  /**
+   * Remove uma insulina pelo ID.
+   * @param id ID da insulina.
+   * @throws NotFoundException se a insulina não for encontrada.
+   */
   async remove(id: string): Promise<void> {
     const insulina = await this.insulinaRepository.findOneBy({ id });
     if (!insulina) {

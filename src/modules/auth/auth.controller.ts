@@ -22,12 +22,12 @@ import {
 import { AuthService } from './auth.service';
 import { Public } from '../../core/decorators/public.decorator';
 import { ListaTokenDTO } from './dto/ListaToken.dto';
-import { LoginDTO } from './dto/Login.dto'; // Você precisará criar este DTO
-import { LoginResponseDTO } from './dto/LoginResponse.dto'; // Você precisará criar este DTO
+import { LoginDTO } from './dto/Login.dto'; 
+import { LoginResponseDTO } from './dto/LoginResponse.dto'; 
 import { MessageResponseDTO } from './dto/MessageResponse.dto';
-import { ProfileResponseDTO } from './dto/ProfileResponse.dto'; // Você precisará criar este DTO
-import { TokensResponseDTO } from './dto/TokensResponse.dto'; // Você precisará criar este DTO
-import { ValidateTokenResponseDTO } from './dto/ValidateTokenResponse.dto'; // Você precisará criar este DTO
+import { ProfileResponseDTO } from './dto/ProfileResponse.dto'; 
+import { TokensResponseDTO } from './dto/TokensResponse.dto'; 
+import { ValidateTokenResponseDTO } from './dto/ValidateTokenResponse.dto'; 
 import { UsuarioService } from '../usuario/usuario.service';
 
 @ApiTags('auth')
@@ -141,7 +141,7 @@ export class AuthController {
   async logout(
     @Headers('Authorization') authorization: string
   ) {
-    // O valor já vem como "Bearer <token>", basta passar para o serviço
+    
     const token = authorization?.split(' ')[1];
     await this.authService.logout(token);
     return { message: 'Logout realizado com sucesso' };

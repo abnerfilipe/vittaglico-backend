@@ -53,9 +53,9 @@ export class AplicacaoInsulinaController {
     } catch (error) {
       console.error(error)
       if (error instanceof HttpException) {
-        throw error; // Re-lança exceções HTTP pré-definidas (NotFound, etc.)
+        throw error; 
       }
-      // Captura erros de validação ou lógicos do serviço
+      
       throw new HttpException(error.message || 'Erro interno ao calcular bolus.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -12,7 +12,7 @@ async function bootstrap() {
     new FastifyAdapter()
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  // Configuração avançada do Swagger
+  
   const config = new DocumentBuilder()
     .setTitle('Vittaglico API')
     .setDescription(`
@@ -35,7 +35,7 @@ async function bootstrap() {
         description: 'Insira seu token JWT',
         in: 'header'
       },
-      'bearer' // ou 'bearer'
+      'bearer' 
     )
     .build();
 

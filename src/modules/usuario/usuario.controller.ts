@@ -45,7 +45,7 @@ import { plainToInstance } from 'class-transformer';
   ListaUsuariosResponseDTO, 
   AtualizaUsuarioResponseDTO, 
   RemoveUsuarioResponseDTO,
-  ConfiguracoesInsulinaDTO // Adicione ConfiguracoesInsulinaDTO aqui
+  ConfiguracoesInsulinaDTO 
 )
 @ApiBearerAuth('bearer')
 @Controller('/usuario')

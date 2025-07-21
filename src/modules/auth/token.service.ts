@@ -39,7 +39,7 @@ export class TokenService {
       return false;
     }
 
-    // Verifica se o token expirou
+    
     return tokenEntity.expiresAt > new Date();
   }
   

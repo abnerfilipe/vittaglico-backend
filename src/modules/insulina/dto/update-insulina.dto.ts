@@ -14,7 +14,7 @@ export class UpdateInsulinaDto {
   @Transform(({ value }) => value === '' ? undefined : value)
   nome?: string;
 
-  @ApiProperty({ description: 'Tipo da insulina (Basal ou Bolus)', example: 'BOLUS', enum: TipoInsulinaEnum, required: false })
+  @ApiProperty({ description: 'Tipo da insulina (Basal ou Correção)', example: 'Correção', enum: TipoInsulinaEnum, required: false })
   @IsOptional()
   @IsEnum(TipoInsulinaEnum)
   @Transform(({ value }) => value === '' ? undefined : value)
