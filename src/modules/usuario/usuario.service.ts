@@ -75,12 +75,17 @@ export class UsuarioService {
 
   async atualizaUsuario(id: string, novosDados: AtualizaUsuarioDTO) {
     const usuario = await this.usuarioRepository.findOneBy({ id });
-
+  
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
-
-    Object.assign(usuario, novosDados as Usuario);
-
+  
+    // Atualiza apenas os campos enviados, mantendo os antigos
+    for (const key of Object.keys(novosDados)) {
+      if (novosDados[key] !== undefined) {
+        usuario[key] = novosDados[key];
+      }
+    }
+  
     return this.usuarioRepository.save(usuario);
   }
 

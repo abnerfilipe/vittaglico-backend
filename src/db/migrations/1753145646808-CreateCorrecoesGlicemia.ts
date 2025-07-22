@@ -5,14 +5,17 @@ export class CreateCorrecoesGlicemia1753145646808 implements MigrationInterface 
     await queryRunner.query(`
       CREATE TABLE correcoes_glicemia (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        usuarioId uuid NOT NULL,
-        glicoseAtual float NOT NULL,
-        glicoseAlvo float NOT NULL,
-        fatorSensibilidadeInsulina float NOT NULL,
-        insulinaAtiva float NOT NULL,
+        usuario_id uuid NOT NULL,
+        glicemia_id uuid,
+        glicose_atual float NOT NULL,
+        glicose_alvo float NOT NULL,
+        fator_sensibilidade_insulina float NOT NULL,
+        insulina_ativa float NOT NULL,
         bolus float NOT NULL,
         message text,
-        createdAt timestamp with time zone DEFAULT now()
+        created_at timestamp with time zone DEFAULT now(),
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (glicemia_id) REFERENCES glicemias(id) ON DELETE SET NULL
       );
     `);
   }

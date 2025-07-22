@@ -29,10 +29,10 @@ export class Usuario {
   @Column({ name: 'senha', length: 255, nullable: false })
   senha: string;
 
-  @Column({ name: 'telefone', length: 20, nullable: true })
+  @Column({ name: 'telefone', length: 12, nullable: true })
   telefone: string;
 
-  @Column({ name: 'data_de_nascimento',type: Date, nullable: true })
+  @Column({ name: 'data_de_nascimento', nullable: true })
   dataDeNascimento: string;
 
   @Column({ name: 'aceite_termos_condicoes', type: 'boolean', nullable: false, default: true })

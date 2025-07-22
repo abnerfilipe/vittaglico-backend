@@ -1,23 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Glicemia } from '../../glicemia/entities/glicemia.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity('correcoes_glicemia')
 export class CorrecaoGlicemia {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ name: 'usuario_id', type: 'uuid' })
   usuarioId: string;
 
-  @Column({ type: 'float' })
+  @ManyToOne(() => Usuario)
+  @JoinColumn({ name: 'usuario_id' })
+  usuario: Usuario;
+
+  @Column({ name: 'glicemia_id', type: 'uuid', nullable: true })
+  glicemiaId: string | null;
+
+  @ManyToOne(() => Glicemia, { nullable: true })
+  @JoinColumn({ name: 'glicemia_id' })
+  glicemia: Glicemia | null;
+
+  @Column({ name: 'glicose_atual', type: 'float' })
   glicoseAtual: number;
 
-  @Column({ type: 'float' })
+  @Column({ name: 'glicose_alvo', type: 'float' })
   glicoseAlvo: number;
 
-  @Column({ type: 'float' })
+  @Column({ name: 'fator_sensibilidade_insulina', type: 'float' })
   fatorSensibilidadeInsulina: number;
 
-  @Column({ type: 'float' })
+  @Column({ name: 'insulina_ativa', type: 'float' })
   insulinaAtiva: number;
 
   @Column({ type: 'float' })
@@ -26,6 +39,6 @@ export class CorrecaoGlicemia {
   @Column({ type: 'text', nullable: true })
   message: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

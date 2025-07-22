@@ -16,7 +16,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     private readonly glicemiaService: GlicemiaService,
     @InjectRepository(CorrecaoGlicemia)
     private readonly correcaoGlicemiaRepository: Repository<CorrecaoGlicemia>,
-  ) {}
+  ) { }
 
   /**
    * Calcula a quantidade de insulina ativa no organismo do usuário,
@@ -60,7 +60,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     valorGlicemiaAtual?: number,
     glicemiaId?: string,
   ): Promise<{ bolus: number; message: string }> {
-    
+
     const usuario = await this.usuarioService.buscaPorId(usuarioId);
     if (!usuario) {
       throw new NotFoundException('Usuário não encontrado.');
@@ -72,6 +72,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     }
 
     let glicemia: Glicemia;
+    let glicemiaIdParaSalvar: string | null = null;
 
     if (glicemiaId) {
       // Busca uma glicemia específica pelo ID
@@ -80,6 +81,7 @@ export class CalculadoraCorrecaoGlicemiaService {
         throw new NotFoundException('Glicemia especificada não foi encontrada.');
       }
       glicemia = glicemiaEspecifica;
+      glicemiaIdParaSalvar = glicemiaId;
     } else if (valorGlicemiaAtual !== undefined && valorGlicemiaAtual !== null) {
       // Usa o valor informado de glicemia atual
       glicemia = new Glicemia();
@@ -92,6 +94,7 @@ export class CalculadoraCorrecaoGlicemiaService {
         throw new Error('Nenhuma glicemia registrada para calcular o bolus.');
       }
       glicemia = ultimaGlicemia;
+      glicemiaIdParaSalvar = ultimaGlicemia.id;
     }
 
     const glicoseAtual = glicemia.valor;
@@ -101,6 +104,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     if (glicoseAtual <= glicoseAlvo) {
       await this.correcaoGlicemiaRepository.save(this.correcaoGlicemiaRepository.create({
         usuarioId,
+        glicemiaId: glicemiaIdParaSalvar,
         glicoseAtual,
         glicoseAlvo,
         fatorSensibilidadeInsulina: fsi,
@@ -136,6 +140,7 @@ export class CalculadoraCorrecaoGlicemiaService {
 
     await this.correcaoGlicemiaRepository.save(this.correcaoGlicemiaRepository.create({
       usuarioId,
+      glicemiaId: glicemiaIdParaSalvar,
       glicoseAtual,
       glicoseAlvo,
       fatorSensibilidadeInsulina: fsi,

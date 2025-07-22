@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { ConfiguracoesInsulinaDTO } from './ConfiguracoesInsulina.dto';
 import { Transform } from 'class-transformer';
 
@@ -18,14 +18,30 @@ export class CriaUsuarioDTO {
   @Length(6, 20, { message: 'A senha precisa ter pelo menos 6 caracteres' })
   senha: string;
 
-  @ApiProperty({ description: 'Telefone do usuário', example: '5511999999999' })
+  @ApiProperty({ description: 'Telefone do usuário', example: '11999999999' })
   @IsString()
-  @Length(8, 20, { message: 'O telefone deve ter entre 8 e 20 caracteres' })
+  @Length(12, 12, { message: 'O telefone deve ter ate 12 caracteres' })
+  @Transform(({ value }) => value === '' ? undefined : value)
+  @IsOptional()
   telefone: string;
+
+
+  @ApiProperty({ description: 'Aceite dos termos e condições', example: true })
+  @Transform(({ value }) => value === "true" ? true : value)
+  @Transform(({ value }) => value === "false" ? false : value)
+  @IsBoolean()
+  aceiteTermosCondicoes: boolean;
+
+  @ApiProperty({ description: 'Aceite da política de privacidade', example: true })
+  @Transform(({ value }) => value === "true" ? true : value)
+  @Transform(({ value }) => value === "false" ? false : value)
+  @IsBoolean()
+  aceitePoliticaDePrivacidade: boolean;
 
   @ApiProperty({ description: 'Data de nascimento do usuário', example: '10/02/1990' })
   @IsString()
   @Matches(/^(\d{2})\/(\d{2})\/(\d{4})$/, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
+  @Transform(({ value }) => value === '' ? undefined : value)
   @Transform(({ value }) => {
     if (!value || typeof value !== 'string') return undefined;
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
@@ -36,8 +52,12 @@ export class CriaUsuarioDTO {
     }
     return value;
   })
+  @IsOptional()
   dataDeNascimento: string;
 
-  @ApiProperty({ description: 'Configurações de insulina do usuário' })
+  @ApiProperty({ description: 'Configurações de insulina do usuário', example: {} })
+  @Transform(({ value }) => value === '' ? undefined : value)
+  @IsOptional()
   configuracoesInsulina: ConfiguracoesInsulinaDTO;
+
 }

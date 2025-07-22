@@ -24,19 +24,10 @@ export class AtualizaUsuarioDTO {
   telefone?: string;
 
   @ApiProperty({ description: 'Data de nascimento do usuário', example: '10/02/1990', required: false })
-  @IsString()
+  @Transform(({ value }) => value === '' ? undefined : value)
   @Matches(/^(\d{2})\/(\d{2})\/(\d{4})$/, { message: 'A data de nascimento deve ser uma data válida (DD/MM/AAAA)' })
+  @IsString()
   @IsOptional()
-  @Transform(({ value }) => {
-    if (!value || typeof value !== 'string') return undefined;
-    const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
-    const match = value.match(regex);
-    if (match) {
-      const [_, dia, mes, ano, hora = '00', min = '00', seg = '00'] = match;
-      return `${ano}-${mes}-${dia}T${hora}:${min}:${seg}`;
-    }
-    return value;
-  })
   dataDeNascimento?: string;
 
   @ApiProperty({ description: 'Configurações de insulina do usuário', required: false })
