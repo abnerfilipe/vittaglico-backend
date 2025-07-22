@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { Glicemia } from "../../glicemia/entities/glicemia.entity";
-import { PeriodoEnum } from "../../glicemia/enum/periodo.enum";
 import { GlicemiaService } from "../../glicemia/glicemia.service";
 import { UsuarioService } from "../../usuario/usuario.service";
 import { AplicacaoInsulina } from "../entities/aplicacao-insulina.entity";
 import { AplicacaoInsulinaService } from "./aplicacao-insulina.service";
+import { CorrecaoGlicemia } from "../entities/correcao-glicemia.entity";
 
 @Injectable()
 export class CalculadoraCorrecaoGlicemiaService {
@@ -12,6 +14,8 @@ export class CalculadoraCorrecaoGlicemiaService {
     private readonly usuarioService: UsuarioService,
     private readonly aplicacaoInsulinaService: AplicacaoInsulinaService,
     private readonly glicemiaService: GlicemiaService,
+    @InjectRepository(CorrecaoGlicemia)
+    private readonly correcaoGlicemiaRepository: Repository<CorrecaoGlicemia>,
   ) {}
 
   /**
@@ -95,6 +99,15 @@ export class CalculadoraCorrecaoGlicemiaService {
     const fsi = configs.fatorSensibilidadeInsulina;
 
     if (glicoseAtual <= glicoseAlvo) {
+      await this.correcaoGlicemiaRepository.save(this.correcaoGlicemiaRepository.create({
+        usuarioId,
+        glicoseAtual,
+        glicoseAlvo,
+        fatorSensibilidadeInsulina: fsi,
+        insulinaAtiva: 0,
+        bolus: 0,
+        message: 'Nenhuma correção necessária.',
+      }));
       return { bolus: 0, message: 'Nenhuma correção necessária.' };
     }
 
@@ -120,6 +133,16 @@ export class CalculadoraCorrecaoGlicemiaService {
     }
 
     bolusFinal = Math.ceil(bolusFinal * 100) / 100;
+
+    await this.correcaoGlicemiaRepository.save(this.correcaoGlicemiaRepository.create({
+      usuarioId,
+      glicoseAtual,
+      glicoseAlvo,
+      fatorSensibilidadeInsulina: fsi,
+      insulinaAtiva,
+      bolus: bolusFinal,
+      message,
+    }));
 
     return { bolus: bolusFinal, message };
   }

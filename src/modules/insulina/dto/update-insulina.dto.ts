@@ -18,7 +18,7 @@ export class UpdateInsulinaDto {
   @IsOptional()
   @IsEnum(TipoInsulinaEnum)
   @Transform(({ value }) => value === '' ? undefined : value)
-  tipoBasalBolus?: TipoInsulinaEnum;
+  tipoBasalCorrecao?: TipoInsulinaEnum;
 
   @ApiProperty({ description: 'Duração da ação em horas', example: 3, required: false })
   @IsOptional()

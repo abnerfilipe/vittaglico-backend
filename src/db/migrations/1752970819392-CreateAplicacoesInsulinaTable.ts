@@ -39,6 +39,21 @@ export class CreateAplicacoesInsulinaTable1678886500000 implements MigrationInte
                         type: 'float',
                         isNullable: false,
                     },
+                    {
+                        name: 'created_at',
+                        type: 'timestamp',
+                        default: 'CURRENT_TIMESTAMP',
+                    },
+                    {
+                        name: 'updated_at',
+                        type: 'timestamp',
+                        default: 'CURRENT_TIMESTAMP',
+                    },
+                    {
+                        name: 'deleted_at',
+                        type: 'timestamp',
+                        isNullable: true,
+                    },
                 ],
             }),
             true,

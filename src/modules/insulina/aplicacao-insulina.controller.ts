@@ -7,6 +7,7 @@ import { ListAplicacaoInsulinaDto } from './dto/list-aplicacao-insulina.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CalculadoraCorrecaoGlicemiaService } from './services/calculadora-correcao-glicemia.service';
 import { CalcularBolusDto } from './dto/calcular-bolus.dto';
+import type { AplicacaoInsulina } from './entities/aplicacao-insulina.entity';
 
 @ApiTags('aplicacao-insulina')
 @ApiBearerAuth('bearer')
@@ -24,7 +25,7 @@ export class AplicacaoInsulinaController {
   @ApiBadRequestResponse({ description: 'Dados de entrada inválidos' })
   @ApiBody({ type: CreateAplicacaoInsulinaDto, description: 'Dados para criar uma nova aplicação de insulina' })
   async create(@Body() createAplicacaoInsulinaDto: CreateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
-    return this.aplicacaoInsulinaService.create(createAplicacaoInsulinaDto);
+    return this.mapToDto(await this.aplicacaoInsulinaService.create(createAplicacaoInsulinaDto));
   }
   
   @Post('calcular-bolus')
@@ -76,16 +77,17 @@ export class AplicacaoInsulinaController {
         }
     })
   @ApiNotFoundResponse({ description: 'Nenhuma aplicação de insulina encontrada para o usuário' })
-  async findAll(@Param('usuarioId') usuarioId: string): Promise<ListAplicacaoInsulinaDto[]> {
-    return this.aplicacaoInsulinaService.findAll(usuarioId);
+  async findAll(@Param('usuarioId') usuarioId: string) {
+    const aplicacoes = await this.aplicacaoInsulinaService.findAll(usuarioId)
+    return aplicacoes.map(aplicacao => this.mapToDto(aplicacao));
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Busca uma aplicação de insulina pelo ID' })
   @ApiOkResponse({ description: 'Aplicação de insulina encontrada', type: ListAplicacaoInsulinaDto })
   @ApiNotFoundResponse({ description: 'Aplicação de insulina não encontrada' })
-  async findOne(@Param('id') id: string): Promise<ListAplicacaoInsulinaDto> {
-    return this.aplicacaoInsulinaService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return this.mapToDto(await this.aplicacaoInsulinaService.findOne(id));
   }
 
   @Patch(':id')
@@ -95,7 +97,7 @@ export class AplicacaoInsulinaController {
   @ApiBody({ type: UpdateAplicacaoInsulinaDto, description: 'Dados para atualizar a aplicação de insulina' })
   @ApiNotFoundResponse({ description: 'Aplicação de insulina não encontrada' })
   async update(@Param('id') id: string, @Body() updateAplicacaoInsulinaDto: UpdateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
-    return this.aplicacaoInsulinaService.update(id, updateAplicacaoInsulinaDto);
+    return this.mapToDto(await this.aplicacaoInsulinaService.update(id, updateAplicacaoInsulinaDto));
   }
 
   @Delete(':id')
@@ -104,5 +106,39 @@ export class AplicacaoInsulinaController {
   @ApiNotFoundResponse({ description: 'Aplicação de insulina não encontrada' })
   async remove(@Param('id') id: string): Promise<void> {
     await this.aplicacaoInsulinaService.remove(id);
+  }
+
+  private mapToDto(aplicacao: AplicacaoInsulina): ListAplicacaoInsulinaDto {
+    return {
+      id: aplicacao.id,
+      usuarioId: aplicacao.usuario?.id,
+      quantidadeUnidades: aplicacao.quantidadeUnidades,
+      insulinaId: aplicacao.insulinaAssociada?.id,
+      nome: aplicacao.insulinaAssociada?.nome,
+      tipoBasalCorrecao: aplicacao.insulinaAssociada?.tipoBasalCorrecao,
+      duracaoAcaoHoras: aplicacao.insulinaAssociada?.duracaoAcaoHoras,
+      picoAcaoHoras: aplicacao.insulinaAssociada?.picoAcaoHoras ?? undefined,
+      dataHoraAplicacao: this.formatDate(aplicacao.dataHoraAplicacao, 'dd/MM/yyyy HH:mm'),
+      createdAt: this.formatDate(aplicacao.createdAt, 'dd/MM/yyyy HH:mm'),
+      updatedAt: this.formatDate(aplicacao.updatedAt, 'dd/MM/yyyy HH:mm'),
+    };
+  }
+
+
+  private formatDate(date: string, format: string): string {
+    const data = new Date(date);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = String(data.getFullYear());
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+
+    if (format === 'dd/MM/yyyy HH:mm') {
+      return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+    } else if (format === 'dd/MM/yyyy') {
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    return date;
   }
 }

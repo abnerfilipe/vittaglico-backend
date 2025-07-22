@@ -10,16 +10,6 @@ export class ListAplicacaoInsulinaDto {
   quantidadeUnidades: number;
 
   @ApiProperty({ description: 'Data e hora da aplicação', example: 'DD/MM/YYYY HH:mm:ss' })
-   @Transform(({ value }) => {
-    if (!value || typeof value !== 'string') return undefined;
-    const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
-    const match = value.match(regex);
-    if (match) {
-      const [_, dia, mes, ano, hora = '00', min = '00', seg = '00'] = match;
-      return `${ano}-${mes}-${dia}T${hora}:${min}:${seg}`;
-    }
-    return value;
-  })
   dataHoraAplicacao: string;
 
   @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
@@ -32,11 +22,18 @@ export class ListAplicacaoInsulinaDto {
   nome?: string;
 
   @ApiProperty({ description: 'Tipo da insulina (Basal ou Correção)', example: 'Correção', enum: TipoInsulinaEnum, required: false, nullable: true })
-  tipoBasalBolus?: TipoInsulinaEnum;
+  tipoBasalCorrecao?: TipoInsulinaEnum;
 
   @ApiProperty({ description: 'Duração da ação em horas', example: 3, required: false, nullable: true })
   duracaoAcaoHoras?: number;
 
   @ApiProperty({ description: 'Pico de ação em horas (opcional)', example: 1.5, required: false, nullable: true })
   picoAcaoHoras?: number;
+
+  @ApiProperty({ description: 'Data de criação', example: 'DD/MM/YYYY HH:mm:ss' })
+
+  createdAt: string;
+  
+  @ApiProperty({ description: 'Data de atualização', example: 'DD/MM/YYYY HH:mm:ss' })
+  updatedAt: string;
 }

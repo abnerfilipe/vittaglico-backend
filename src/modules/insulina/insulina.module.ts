@@ -12,12 +12,14 @@ import { CalculadoraCorrecaoGlicemiaService } from './services/calculadora-corre
 import { Glicemia } from '../glicemia/entities/glicemia.entity';
 import { UsuarioModule } from '../usuario/usuario.module';
 import { GlicemiaModule } from '../glicemia/glicemia.module';
+import { CorrecaoGlicemia } from './entities/correcao-glicemia.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Insulina, 
-      AplicacaoInsulina
+      AplicacaoInsulina,
+      CorrecaoGlicemia,
     ]),
     AuthModule,
     UsuarioModule,  

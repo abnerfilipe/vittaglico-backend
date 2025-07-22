@@ -12,7 +12,7 @@ export class CreateInsulinaDto {
   @ApiProperty({ description: 'Tipo da insulina (Basal ou Correção)', example: 'Correção', enum: TipoInsulinaEnum })
   @IsString()
   @IsEnum(TipoInsulinaEnum)
-  tipoBasalBolus: TipoInsulinaEnum;
+  tipoBasalCorrecao: TipoInsulinaEnum;
 
   @ApiProperty({ description: 'Duração da ação em horas', example: 3 })
   @IsNumber()

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 import { Insulina } from './insulina.entity'; 
 import { Usuario } from '../../usuario/entities/usuario.entity';
 
@@ -29,4 +29,14 @@ export class AplicacaoInsulina {
 
   @Column('float', { name: 'duracao_acao_insulina_efetiva' })
   duracaoAcaoInsulinaEfetiva: number; 
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: string;
+  
 }

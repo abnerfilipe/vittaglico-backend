@@ -21,40 +21,14 @@ export class AplicacaoInsulinaService {
    * @param createAplicacaoInsulinaDto Dados para criação da aplicação de insulina.
    * @returns Dados da aplicação de insulina criada.
    */
-  async create(createAplicacaoInsulinaDto: CreateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
+  async create(createAplicacaoInsulinaDto: CreateAplicacaoInsulinaDto): Promise<AplicacaoInsulina> {
     const insulina = await this.insulinaService.findOne(createAplicacaoInsulinaDto.insulinaId);
 
     const aplicacaoInsulina = this.aplicacaoInsulinaRepository.create({
       ...createAplicacaoInsulinaDto,
       duracaoAcaoInsulinaEfetiva: insulina.duracaoAcaoHoras, 
     });
-    const savedAplicacaoInsulina = await this.aplicacaoInsulinaRepository.save(aplicacaoInsulina);
-
-    if (!savedAplicacaoInsulina.insulinaId) {
-      return {
-        id: savedAplicacaoInsulina.id,
-        quantidadeUnidades: savedAplicacaoInsulina.quantidadeUnidades,
-        dataHoraAplicacao: savedAplicacaoInsulina.dataHoraAplicacao,
-        usuarioId: savedAplicacaoInsulina.usuarioId,
-        insulinaId: undefined,
-        nome: undefined,
-        tipoBasalBolus: undefined,
-        duracaoAcaoHoras: undefined,
-        picoAcaoHoras: undefined,
-      };
-    }
-
-    return {
-      id: savedAplicacaoInsulina.id,
-      quantidadeUnidades: savedAplicacaoInsulina.quantidadeUnidades,
-      dataHoraAplicacao: savedAplicacaoInsulina.dataHoraAplicacao,
-      usuarioId: savedAplicacaoInsulina.usuarioId,
-      insulinaId: savedAplicacaoInsulina.insulinaId ?? undefined,
-      nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
-      duracaoAcaoHoras: insulina.duracaoAcaoHoras,
-      picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
-    };
+    return await this.aplicacaoInsulinaRepository.save(aplicacaoInsulina);
   }
 
   /**
@@ -62,37 +36,8 @@ export class AplicacaoInsulinaService {
    * @param usuarioId ID do usuário.
    * @returns Lista de aplicações de insulina.
    */
-  async findAll(usuarioId: string): Promise<ListAplicacaoInsulinaDto[]> {
-    const aplicacoesInsulina = await this.aplicacaoInsulinaRepository.find({ where: { usuarioId } });
-    return Promise.all(aplicacoesInsulina.map(async aplicacaoInsulina => {
-
-      if (!aplicacaoInsulina.insulinaId) {
-        return {
-          id: aplicacaoInsulina.id,
-          quantidadeUnidades: aplicacaoInsulina.quantidadeUnidades,
-          dataHoraAplicacao: aplicacaoInsulina.dataHoraAplicacao,
-          usuarioId: aplicacaoInsulina.usuarioId,
-          insulinaId: undefined,
-          nome: undefined,
-          tipoBasalBolus: undefined,
-          duracaoAcaoHoras: undefined,
-          picoAcaoHoras: undefined,
-        };
-      }
-
-      const insulina = await this.insulinaService.findOne(aplicacaoInsulina.insulinaId);
-      return {
-        id: aplicacaoInsulina.id,
-        quantidadeUnidades: aplicacaoInsulina.quantidadeUnidades,
-        dataHoraAplicacao: aplicacaoInsulina.dataHoraAplicacao,
-        usuarioId: aplicacaoInsulina.usuarioId,
-        insulinaId: aplicacaoInsulina.insulinaId ?? undefined,
-        nome: insulina.nome,
-        tipoBasalBolus: insulina.tipoBasalBolus,
-        duracaoAcaoHoras: insulina.duracaoAcaoHoras,
-        picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
-      };
-    }));
+  async findAll(usuarioId: string): Promise<AplicacaoInsulina[]> {
+    return this.aplicacaoInsulinaRepository.find({ where: { usuarioId } });
   }
 
   /**
@@ -100,39 +45,12 @@ export class AplicacaoInsulinaService {
    * @param id ID da aplicação de insulina.
    * @returns Dados da aplicação de insulina.
    */
-  async findOne(id: string): Promise<ListAplicacaoInsulinaDto> {
+  async findOne(id: string): Promise<AplicacaoInsulina> {
     const aplicacaoInsulina = await this.aplicacaoInsulinaRepository.findOneBy({ id });
     if (!aplicacaoInsulina) {
       throw new NotFoundException(`Aplicação de insulina com ID ${id} não encontrada`);
     }
-
-    if (!aplicacaoInsulina.insulinaId) {
-      return {
-        id: aplicacaoInsulina.id,
-        quantidadeUnidades: aplicacaoInsulina.quantidadeUnidades,
-        dataHoraAplicacao: aplicacaoInsulina.dataHoraAplicacao,
-        usuarioId: aplicacaoInsulina.usuarioId,
-        insulinaId: undefined,
-        nome: undefined,
-        tipoBasalBolus: undefined,
-        duracaoAcaoHoras: undefined,
-        picoAcaoHoras: undefined,
-      };
-    }
-
-    const insulina = await this.insulinaService.findOne(aplicacaoInsulina.insulinaId);
-
-    return {
-      id: aplicacaoInsulina.id,
-      quantidadeUnidades: aplicacaoInsulina.quantidadeUnidades,
-      dataHoraAplicacao: aplicacaoInsulina.dataHoraAplicacao,
-      usuarioId: aplicacaoInsulina.usuarioId,
-      insulinaId: aplicacaoInsulina.insulinaId ?? undefined,
-      nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
-      duracaoAcaoHoras: insulina.duracaoAcaoHoras,
-      picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
-    };
+    return aplicacaoInsulina;
   }
 
   /**
@@ -141,7 +59,7 @@ export class AplicacaoInsulinaService {
    * @param updateAplicacaoInsulinaDto Dados para atualização.
    * @returns Dados da aplicação de insulina atualizada.
    */
-  async update(id: string, updateAplicacaoInsulinaDto: UpdateAplicacaoInsulinaDto): Promise<ListAplicacaoInsulinaDto> {
+  async update(id: string, updateAplicacaoInsulinaDto: UpdateAplicacaoInsulinaDto): Promise<AplicacaoInsulina> {
     const aplicacaoInsulina = await this.aplicacaoInsulinaRepository.findOneBy({ id });
     if (!aplicacaoInsulina) {
       throw new NotFoundException(`Aplicação de insulina com ID ${id} não encontrada`);
@@ -153,33 +71,7 @@ export class AplicacaoInsulinaService {
       throw new NotFoundException(`Aplicação de insulina com ID ${id} não encontrada após a atualização`);
     }
 
-    if (!aplicacaoInsulinaAtualizada.insulinaId) {
-       return {
-        id: aplicacaoInsulinaAtualizada.id,
-        quantidadeUnidades: aplicacaoInsulinaAtualizada.quantidadeUnidades,
-        dataHoraAplicacao: aplicacaoInsulinaAtualizada.dataHoraAplicacao,
-        usuarioId: aplicacaoInsulinaAtualizada.usuarioId,
-        insulinaId: undefined,
-        nome: undefined,
-        tipoBasalBolus: undefined,
-        duracaoAcaoHoras: undefined,
-        picoAcaoHoras: undefined,
-      };
-    }
-
-    const insulina = await this.insulinaService.findOne(aplicacaoInsulinaAtualizada.insulinaId);
-
-    return {
-      id: aplicacaoInsulinaAtualizada.id,
-      quantidadeUnidades: aplicacaoInsulinaAtualizada.quantidadeUnidades,
-      dataHoraAplicacao: aplicacaoInsulinaAtualizada.dataHoraAplicacao,
-      usuarioId: aplicacaoInsulinaAtualizada.usuarioId,
-      insulinaId: aplicacaoInsulinaAtualizada.insulinaId ?? undefined,
-      nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
-      duracaoAcaoHoras: insulina.duracaoAcaoHoras,
-      picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
-    };
+    return aplicacaoInsulinaAtualizada;
   }
 
   /**

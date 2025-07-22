@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 import { AplicacaoInsulina } from './aplicacao-insulina.entity';
 import { Usuario } from '../../usuario/entities/usuario.entity';
 import { TipoInsulinaEnum } from '../enum/tipoInsulina.enum';
@@ -14,10 +14,10 @@ export class Insulina {
   @Column({
     type: 'enum',
     enum: TipoInsulinaEnum,
-    name: 'tipo_basal_bolus',
+    name: 'tipo_basal_correcao',
     default: TipoInsulinaEnum.CORRECAO,
   })
-  tipoBasalBolus: TipoInsulinaEnum;
+  tipoBasalCorrecao: TipoInsulinaEnum;
 
   @Column('float', { name: 'duracao_acao_horas', nullable: false }) 
   
@@ -36,5 +36,14 @@ export class Insulina {
 
   @OneToMany(() => AplicacaoInsulina, (aplicacao) => aplicacao.insulinaAssociada, { cascade: true })
   aplicacoes: AplicacaoInsulina[];
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: string;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: string;
 
 }

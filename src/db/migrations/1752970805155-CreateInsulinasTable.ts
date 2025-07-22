@@ -19,10 +19,10 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
                         isNullable: false,
                     },
                     {
-                        name: 'tipo_basal_bolus',
+                        name: 'tipo_basal_correcao',
                         type: 'enum',
-                        enum: ['Bolus', 'Basal'],
-                        default: "'Bolus'",
+                        enum: ['Correção', 'Basal'],
+                        default: "'Correção'",
                         isNullable: false,
                     },
                     {
@@ -39,6 +39,21 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
                         name: 'usuario_id',
                         type: 'uuid',
                         isNullable: false,
+                    },
+                    {
+                        name: 'created_at',
+                        type: 'timestamp',
+                        default: 'CURRENT_TIMESTAMP',
+                    },
+                    {
+                        name: 'updated_at',
+                        type: 'timestamp',
+                        default: 'CURRENT_TIMESTAMP',
+                    },
+                    {
+                        name: 'deleted_at',
+                        type: 'timestamp',
+                        isNullable: true,
                     },
                 ],
             }),

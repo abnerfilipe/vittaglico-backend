@@ -23,10 +23,12 @@ export class InsulinaService {
     return {
       id: insulina.id,
       nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
+      tipoBasalCorrecao: insulina.tipoBasalCorrecao,
       duracaoAcaoHoras: insulina.duracaoAcaoHoras,
       picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
       usuarioId: insulina.usuarioId,
+      createdAt: insulina.createdAt,
+      updatedAt: insulina.updatedAt,
     };
   }
 
@@ -40,10 +42,12 @@ export class InsulinaService {
     return insulinas.map(insulina => ({
       id: insulina.id,
       nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
+      tipoBasalCorrecao: insulina.tipoBasalCorrecao,
       duracaoAcaoHoras: insulina.duracaoAcaoHoras,
       picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
       usuarioId: insulina.usuarioId,
+      createdAt: insulina.createdAt,
+      updatedAt: insulina.updatedAt,
     }));
   }
 
@@ -61,10 +65,12 @@ export class InsulinaService {
     return {
       id: insulina.id,
       nome: insulina.nome,
-      tipoBasalBolus: insulina.tipoBasalBolus,
+      tipoBasalCorrecao: insulina.tipoBasalCorrecao,
       duracaoAcaoHoras: insulina.duracaoAcaoHoras,
       picoAcaoHoras: insulina.picoAcaoHoras ?? undefined,
       usuarioId: insulina.usuarioId,
+      createdAt: insulina.createdAt,
+      updatedAt: insulina.updatedAt,
     };
   }
 
@@ -88,10 +94,12 @@ export class InsulinaService {
      return {
       id: insulinaAtualizada.id,
       nome: insulinaAtualizada.nome,
-      tipoBasalBolus: insulinaAtualizada.tipoBasalBolus,
+      tipoBasalCorrecao: insulinaAtualizada.tipoBasalCorrecao,
       duracaoAcaoHoras: insulinaAtualizada.duracaoAcaoHoras,
       picoAcaoHoras: insulinaAtualizada.picoAcaoHoras ?? undefined,
       usuarioId: insulinaAtualizada.usuarioId,
+      createdAt: insulinaAtualizada.createdAt,
+      updatedAt: insulinaAtualizada.updatedAt,
     };
   }
 
