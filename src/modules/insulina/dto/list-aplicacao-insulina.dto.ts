@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TipoInsulinaEnum } from '../enum/tipoInsulina.enum';
 import { Transform } from 'class-transformer';
+import { Insulina } from '../entities/insulina.entity';
 
 export class ListAplicacaoInsulinaDto {
   @ApiProperty({ description: 'ID da aplicação de insulina', example: 'uuid' })
@@ -36,4 +37,7 @@ export class ListAplicacaoInsulinaDto {
   
   @ApiProperty({ description: 'Data de atualização', example: 'DD/MM/YYYY HH:mm:ss' })
   updatedAt: string;
+
+  @ApiProperty({ description: 'Insulina associada', type: Insulina, required: false })
+  insulinaAssociada: Insulina;
 }

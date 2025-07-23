@@ -118,6 +118,7 @@ export class AplicacaoInsulinaController {
       tipoBasalCorrecao: aplicacao.insulinaAssociada?.tipoBasalCorrecao,
       duracaoAcaoHoras: aplicacao.insulinaAssociada?.duracaoAcaoHoras,
       picoAcaoHoras: aplicacao.insulinaAssociada?.picoAcaoHoras ?? undefined,
+      insulinaAssociada: aplicacao.insulinaAssociada,
       dataHoraAplicacao: this.formatDate(aplicacao.dataHoraAplicacao, 'dd/MM/yyyy HH:mm'),
       createdAt: this.formatDate(aplicacao.createdAt, 'dd/MM/yyyy HH:mm'),
       updatedAt: this.formatDate(aplicacao.updatedAt, 'dd/MM/yyyy HH:mm'),

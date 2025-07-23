@@ -1,5 +1,5 @@
+// filepath: /Users/filipeabner/code/vittaglico-backend/src/modules/insulina/dto/create-aplicacao-insulina.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
 
 export class CreateAplicacaoInsulinaDto {
@@ -8,17 +8,7 @@ export class CreateAplicacaoInsulinaDto {
   @IsNumber()
   quantidadeUnidades: number;
 
-  @Transform(({ value }) => {
-    if (!value || typeof value !== 'string') return undefined;
-    const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
-    const match = value.match(regex);
-    if (match) {
-      const [_, dia, mes, ano, hora = '00', min = '00', seg = '00'] = match;
-      return `${ano}-${mes}-${dia}T${hora}:${min}:${seg}`;
-    }
-    return value;
-  })
-  @ApiProperty({ description: 'Data e hora da aplicação', example: 'DD/MM/YYYY HH:mm:ss' })
+  @ApiProperty({ description: 'Data e hora da aplicação', example: '22/07/2025 19:30:00' })
   @IsString({ message: 'A data e hora da aplicação deve ser uma string no formato DD/MM/YYYY HH:mm:ss' })
   @IsNotEmpty({ message: 'A data e hora da aplicação não pode ser vazia' })
   dataHoraAplicacao: string;

@@ -14,7 +14,7 @@ export class AplicacaoInsulinaService {
     private readonly aplicacaoInsulinaRepository: Repository<AplicacaoInsulina>,
     @Inject(InsulinaService)
     private readonly insulinaService: InsulinaService,
-  ) {}
+  ) { }
 
   /**
    * Cria uma nova aplicação de insulina.
@@ -26,7 +26,7 @@ export class AplicacaoInsulinaService {
 
     const aplicacaoInsulina = this.aplicacaoInsulinaRepository.create({
       ...createAplicacaoInsulinaDto,
-      duracaoAcaoInsulinaEfetiva: insulina.duracaoAcaoHoras, 
+      duracaoAcaoInsulinaEfetiva: insulina.duracaoAcaoHoras,
     });
     return await this.aplicacaoInsulinaRepository.save(aplicacaoInsulina);
   }
@@ -37,7 +37,7 @@ export class AplicacaoInsulinaService {
    * @returns Lista de aplicações de insulina.
    */
   async findAll(usuarioId: string): Promise<AplicacaoInsulina[]> {
-    return this.aplicacaoInsulinaRepository.find({ where: { usuarioId } });
+    return this.aplicacaoInsulinaRepository.find({ where: { usuarioId }, relations: ['insulinaAssociada'] });
   }
 
   /**
@@ -46,7 +46,7 @@ export class AplicacaoInsulinaService {
    * @returns Dados da aplicação de insulina.
    */
   async findOne(id: string): Promise<AplicacaoInsulina> {
-    const aplicacaoInsulina = await this.aplicacaoInsulinaRepository.findOneBy({ id });
+    const aplicacaoInsulina = await this.aplicacaoInsulinaRepository.findOne({ where: { id }, relations: ['insulinaAssociada'] });
     if (!aplicacaoInsulina) {
       throw new NotFoundException(`Aplicação de insulina com ID ${id} não encontrada`);
     }
@@ -98,9 +98,10 @@ export class AplicacaoInsulinaService {
         usuarioId,
         dataHoraAplicacao: MoreThanOrEqual(
           new Date(dataHoraAtual.getTime() - 6 * 60 * 60 * 1000).toISOString()
-        ), 
+        ),
       },
       order: { dataHoraAplicacao: 'DESC' },
     });
   }
+
 }
