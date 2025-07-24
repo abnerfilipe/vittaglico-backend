@@ -3,5 +3,7 @@ export enum QuadranteAplicacaoInsulina {
   SUPERIOR_ESQUERDO = 'Superior Esquerdo',
   INFERIOR_DIREITO = 'Inferior Direito',
   INFERIOR_ESQUERDO = 'Inferior Esquerdo',
-  CENTRAL = 'Central', 
+  CENTRAL = 'Central',
+  AREA_TOTAL = 'Área Total',
+  NENHUM = 'Nenhum',
 }

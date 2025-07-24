@@ -9,7 +9,10 @@ import { TokenEntity } from '../auth/token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Usuario,TokenEntity]),
+    TypeOrmModule.forFeature([
+      Usuario, 
+      TokenEntity
+    ]),
   ],
   controllers: [UsuarioController],
   providers: [

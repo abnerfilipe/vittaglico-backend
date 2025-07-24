@@ -10,6 +10,8 @@ import { CorrecaoGlicemia } from "../entities/correcao-glicemia.entity";
 import { LadoAplicacaoInsulina } from "../enum/ladoAplicacaoInsulina.enum";
 import { LocalAplicacaoInsulina } from "../enum/localAplicacaoInsulina.enum";
 import { QuadranteAplicacaoInsulina } from "../enum/quadranteAplicacaoInsulina.enum";
+import type { SugestaoLocalRodizio } from "../interfaces/sugestaoLocalRodizio.interface";
+import { LOCAL_QUADRANTE_MAP } from "../constants/rodizio.constants";
 
 @Injectable()
 export class CalculadoraCorrecaoGlicemiaService {
@@ -155,110 +157,93 @@ export class CalculadoraCorrecaoGlicemiaService {
     return { bolus: bolusFinal, message };
   }
 
-   /**
-   * Sugere o próximo local de aplicação de insulina, seguindo as regras de rodízio.
-   * Prioriza locais não usados nos últimos 14 dias.
+  /**
+   * Retorna um array de locais de aplicação de insulina disponíveis,
+   * priorizando aqueles não usados nos últimos 14 dias.
    *
-   * @param usuarioId O ID do usuário para quem a sugestão será gerada.
-   * @returns Um objeto contendo o local, lado e quadrante sugeridos.
+   * @param usuarioId O ID do usuário para quem as sugestões serão geradas.
+   * @returns Um array de objetos SugestaoLocalRodizio.
    * @throws NotFoundException se o usuário não for encontrado.
    */
-  async obterSugestaoRodizio(
-    usuarioId: string,
-  ): Promise<{
-    local: LocalAplicacaoInsulina;
-    lado: LadoAplicacaoInsulina;
-    quadrante: QuadranteAplicacaoInsulina | null;
-  }> {
+async obterLocaisRodizioDisponiveis(usuarioId: string): Promise<SugestaoLocalRodizio[]> {
     const usuario = await this.usuarioService.buscaPorId(usuarioId);
     if (!usuario) {
       throw new NotFoundException(`Usuário com ID ${usuarioId} não encontrado.`);
     }
 
-    // Definir todos os locais e lados possíveis a partir dos enums
-    const locaisDisponiveis = Object.values(LocalAplicacaoInsulina);
-    const ladosDisponiveis = Object.values(LadoAplicacaoInsulina);
-    // Quadrantes são opcionais e dependem da granularidade desejada.
-    // Se você não usar quadrantes para todos os locais, ajuste esta lista.
-    const quadrantesDisponiveis: (QuadranteAplicacaoInsulina | null)[] = [
-      ...Object.values(QuadranteAplicacaoInsulina),
-      null, // Inclui a opção de não ter quadrante
-    ];
-
-    // Buscar um número razoável das últimas aplicações para análise.
-    // O número 30 é um bom ponto de partida, cobrindo um mês.
     const ultimasAplicacoes = await this.aplicacaoInsulinaService.findUltimasAplicacoes(
       usuarioId,
-      30,
+      50,
     );
 
-    // Mapear os pontos de aplicação e a data da última vez que foram usados
-    // Chave: "local-lado-quadrante" (ex: "abdome-direito-superior-direito")
     const pontosUsadosRecentemente = new Map<string, Date>();
     for (const aplicacao of ultimasAplicacoes) {
-      const key = `${aplicacao.localAplicacao}-${aplicacao.ladoAplicacao}-${aplicacao.quadranteAplicacao || 'nulo'}`;
-      const dataAtualAplicacao = aplicacao.dataHoraAplicacao;
-      
-      // Se dataHoraAplicacao é string, converta para Date antes de comparar
-      const dataAtualAplicacaoDate = new Date(dataAtualAplicacao);
-      
-      if (
-        !pontosUsadosRecentemente.has(key) ||
-        dataAtualAplicacaoDate > pontosUsadosRecentemente.get(key)!
-      ) {
+      // Se 'quadranteAplicacao' puder vir como null do banco, ajuste a chave aqui também.
+      // Agora, como não retornaremos null, assumimos que no banco ele será um valor ou undefined.
+      const key = `${aplicacao.localAplicacao}-${aplicacao.ladoAplicacao}-${aplicacao.quadranteAplicacao || 'NÃO_DEFINIDO'}`; // Use uma string placeholder se ele puder ser null no banco
+      const dataAtualAplicacaoDate = new Date(aplicacao.dataHoraAplicacao);
+
+      if (!pontosUsadosRecentemente.has(key) || dataAtualAplicacaoDate > pontosUsadosRecentemente.get(key)!) {
         pontosUsadosRecentemente.set(key, dataAtualAplicacaoDate);
       }
     }
 
-    // Definir o limite de tempo para reuso (14 dias)
     const limiteReuso = new Date();
-    limiteReuso.setDate(limiteReuso.getDate() - 14); // 14 dias atrás
+    limiteReuso.setDate(limiteReuso.getDate() - 14);
 
-    // Tentar encontrar um ponto que não foi usado nos últimos 14 dias
-    for (const local of locaisDisponiveis) {
-      for (const lado of ladosDisponiveis) {
-        for (const quadrante of quadrantesDisponiveis) {
-          const key = `${local}-${lado}-${quadrante || 'nulo'}`;
-          if (!pontosUsadosRecentemente.has(key) || pontosUsadosRecentemente.get(key)! < limiteReuso) {
-            // Encontrou um ponto que está livre ou foi usado há mais de 14 dias
-            return { local, lado, quadrante };
-          }
-        }
-      }
-    }
+    const locaisDisponiveisOrdenados: SugestaoLocalRodizio[] = [];
+    const locaisUsadosRecentemente: SugestaoLocalRodizio[] = [];
 
-    // Se todos os pontos possíveis foram usados nos últimos 14 dias (cenário raro para 30+ pontos):
-    // Retornar o ponto menos recentemente usado para minimizar o impacto.
-    let pontoMenosRecente: { local: LocalAplicacaoInsulina; lado: LadoAplicacaoInsulina; quadrante: QuadranteAplicacaoInsulina | null } | null = null;
-    let dataMenosRecente: Date | null = null;
+    for (const localKey of Object.values(LocalAplicacaoInsulina)) {
+      const ladosDoLocal = LOCAL_QUADRANTE_MAP[localKey];
 
-    for (const local of locaisDisponiveis) {
-      for (const lado of ladosDisponiveis) {
-        for (const quadrante of quadrantesDisponiveis) {
-          const key = `${local}-${lado}-${quadrante || 'nulo'}`;
-          const dataUso = pontosUsadosRecentemente.get(key);
+      for (const ladoKey of Object.values(LadoAplicacaoInsulina)) {
+        const quadrantesValidos = ladosDoLocal[ladoKey];
 
-          if (dataUso) {
-            if (!dataMenosRecente || dataUso < dataMenosRecente) {
-              dataMenosRecente = dataUso;
-              pontoMenosRecente = { local, lado, quadrante };
+        if (quadrantesValidos && quadrantesValidos.length > 0) { // Verifica se há quadrantes válidos para essa combinação
+          for (const quadrante of quadrantesValidos) {
+            const key = `${localKey}-${ladoKey}-${quadrante}`; // A chave não precisa mais de '|| nulo'
+            const dataUso = pontosUsadosRecentemente.get(key);
+
+            const sugestao: SugestaoLocalRodizio = {
+              local: localKey,
+              lado: ladoKey,
+              quadrante: quadrante,
+              ultimoUso: dataUso,
+            };
+
+            if (!dataUso || dataUso < limiteReuso) {
+              locaisDisponiveisOrdenados.push(sugestao);
+            } else {
+              locaisUsadosRecentemente.push(sugestao);
             }
           }
         }
       }
     }
 
-    if (pontoMenosRecente) {
-      console.warn(`[Rodízio Insulina] Todos os pontos foram usados nos últimos 14 dias. Sugerindo o ponto menos recente: ${pontoMenosRecente.local}, ${pontoMenosRecente.lado}, ${pontoMenosRecente.quadrante || 'sem quadrante'} (último uso: ${dataMenosRecente?.toLocaleDateString()}).`);
-      return pontoMenosRecente;
+    locaisDisponiveisOrdenados.sort((a, b) => {
+      const dateA = a.ultimoUso ? a.ultimoUso.getTime() : 0;
+      const dateB = b.ultimoUso ? b.ultimoUso.getTime() : 0; // Correção aqui: 'b.ultimoBuso' para 'b.ultimoUso'
+      return dateA - dateB;
+    });
+
+    if (locaisDisponiveisOrdenados.length === 0 && locaisUsadosRecentemente.length > 0) {
+        console.warn("[Rodízio Insulina] Todos os pontos válidos foram usados nos últimos 14 dias. Retornando os menos recentes.");
+        locaisUsadosRecentemente.sort((a, b) => (a.ultimoUso?.getTime() || 0) - (b.ultimoUso?.getTime() || 0));
+        return locaisUsadosRecentemente;
     }
 
-    // Fallback caso não haja nenhuma aplicação anterior ou se a lógica falhar (improvável)
-    console.warn("[Rodízio Insulina] Não foi possível encontrar uma sugestão baseada no histórico. Sugerindo padrão: Abdome Direito, Superior-Direito.");
-    return {
+    if (locaisDisponiveisOrdenados.length > 0) {
+        return locaisDisponiveisOrdenados;
+    }
+
+    console.warn("[Rodízio Insulina] Nenhum local disponível ou histórico encontrado para os padrões definidos. Retornando uma sugestão padrão.");
+    // Fallback agora retorna um quadrante específico, não null
+    return [{
       local: LocalAplicacaoInsulina.ABDOME,
       lado: LadoAplicacaoInsulina.DIREITO,
-      quadrante: QuadranteAplicacaoInsulina.SUPERIOR_DIREITO,
-    };
+      quadrante: QuadranteAplicacaoInsulina.CENTRAL,
+    }];
   }
 }

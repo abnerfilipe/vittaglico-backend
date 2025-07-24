@@ -1,22 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus, NotFoundException, Headers, forwardRef, Inject } from '@nestjs/common';
 import { AplicacaoInsulinaService } from './services/aplicacao-insulina.service';
 import { CreateAplicacaoInsulinaDto } from './dto/create-aplicacao-insulina.dto';
 import { UpdateAplicacaoInsulinaDto } from './dto/update-aplicacao-insulina.dto';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiOkResponse, ApiNotFoundResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiOkResponse, ApiNotFoundResponse, ApiBody, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { ListAplicacaoInsulinaDto } from './dto/list-aplicacao-insulina.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CalculadoraCorrecaoGlicemiaService } from './services/calculadora-correcao-glicemia.service';
 import { CalcularBolusDto } from './dto/calcular-bolus.dto';
 import type { AplicacaoInsulina } from './entities/aplicacao-insulina.entity';
+import { SugestaoLocalRodizioResponseDto } from './dto/sugestaoLocalRodizioResponse.dto';
+import { UsuarioService } from '../usuario/usuario.service';
 
 @ApiTags('aplicacao-insulina')
 @ApiBearerAuth('bearer')
 @UseGuards(AuthGuard)
+@ApiExtraModels(CreateAplicacaoInsulinaDto, UpdateAplicacaoInsulinaDto, ListAplicacaoInsulinaDto)
 @Controller('aplicacao-insulina')
 export class AplicacaoInsulinaController {
+  calculadoraBolusService: any;
   constructor(
     private readonly aplicacaoInsulinaService: AplicacaoInsulinaService,
-    private readonly calculadoraCorrecaoGlicemiaService: CalculadoraCorrecaoGlicemiaService
+    private readonly calculadoraCorrecaoGlicemiaService: CalculadoraCorrecaoGlicemiaService,
+    private readonly usuarioService: UsuarioService,
   ) {}
 
   @Post()
@@ -90,6 +95,23 @@ export class AplicacaoInsulinaController {
     return this.mapToDto(await this.aplicacaoInsulinaService.findOne(id));
   }
 
+  @Get('rodizio/sugestoes')
+  @ApiOperation({ summary: 'Obtém uma lista de locais sugeridos para aplicação de insulina com base nas regras de rodízio.' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Lista de locais de aplicação disponíveis.', type: [SugestaoLocalRodizioResponseDto] })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Usuário não encontrado.' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Não autorizado.' })
+  async getSugestoesRodizio(
+    @Headers('Authorization') authorization: string,
+  ): Promise<SugestaoLocalRodizioResponseDto[]> {
+    const token = authorization?.split(' ')[1];
+    const usuarioId = await this.usuarioService.buscarUsuarioIdPeloTokens(token);
+    if (!usuarioId) {
+      throw new NotFoundException('Usuário autenticado não encontrado.');
+    }
+
+    return this.calculadoraCorrecaoGlicemiaService.obterLocaisRodizioDisponiveis(usuarioId);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza uma aplicação de insulina pelo ID' })
   @ApiOkResponse({ description: 'Aplicação de insulina atualizada com sucesso', type: ListAplicacaoInsulinaDto })
@@ -124,7 +146,6 @@ export class AplicacaoInsulinaController {
       updatedAt: this.formatDate(aplicacao.updatedAt, 'dd/MM/yyyy HH:mm'),
     };
   }
-
 
   private formatDate(date: string, format: string): string {
     const data = new Date(date);
