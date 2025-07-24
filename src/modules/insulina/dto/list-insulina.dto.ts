@@ -25,18 +25,18 @@ export class ListInsulinaDto {
   @Transform(({ value }) => {
     if (!value) return undefined;
 
-    // Se já for string no formato ISO, retorna direto
+    
     if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
       return value;
     }
 
-    // Se vier como Date, converte para string no formato desejado
+    
     if (value instanceof Date) {
       const pad = (n: number) => n.toString().padStart(2, '0');
       return `${value.getFullYear()}/${pad(value.getMonth() + 1)}/${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
     }
 
-    // Se vier como string brasileiro, transforma para ISO
+    
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
     const match = typeof value === 'string' ? value.match(regex) : null;
     if (match) {
@@ -52,18 +52,18 @@ export class ListInsulinaDto {
   @Transform(({ value }) => {
     if (!value) return undefined;
 
-    // Se já for string no formato ISO, retorna direto
+    
     if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
       return value;
     }
 
-    // Se vier como Date, converte para string no formato desejado
+    
     if (value instanceof Date) {
       const pad = (n: number) => n.toString().padStart(2, '0');
       return `${value.getFullYear()}/${pad(value.getMonth() + 1)}/${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
     }
 
-    // Se vier como string brasileiro, transforma para ISO
+    
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2})(?::(\d{2}))?)?$/;
     const match = typeof value === 'string' ? value.match(regex) : null;
     if (match) {

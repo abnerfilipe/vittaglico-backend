@@ -1,6 +1,9 @@
-// filepath: /Users/filipeabner/code/vittaglico-backend/src/modules/insulina/dto/create-aplicacao-insulina.dto.ts
+
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { LadoAplicacaoInsulina } from '../enum/ladoAplicacaoInsulina.enum';
+import { LocalAplicacaoInsulina } from '../enum/localAplicacaoInsulina.enum';
+import { QuadranteAplicacaoInsulina } from '../enum/quadranteAplicacaoInsulina.enum';
 
 export class CreateAplicacaoInsulinaDto {
   @ApiProperty({ description: 'Quantidade de unidades aplicadas', example: 12 })
@@ -20,4 +23,15 @@ export class CreateAplicacaoInsulinaDto {
   @ApiProperty({ description: 'ID da insulina associada', example: 'uuid', required: true })
   @IsUUID()
   insulinaId: string;
+
+
+  @IsIn(Object.values(LocalAplicacaoInsulina)) 
+  localAplicacao: LocalAplicacaoInsulina;
+
+  @IsIn(Object.values(LadoAplicacaoInsulina))
+  ladoAplicacao: LadoAplicacaoInsulina;
+
+  @IsIn(Object.values(QuadranteAplicacaoInsulina))
+  @IsOptional()
+  quadranteAplicacao?: QuadranteAplicacaoInsulina;
 }

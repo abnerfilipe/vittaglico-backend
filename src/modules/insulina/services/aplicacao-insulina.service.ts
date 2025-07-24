@@ -103,5 +103,18 @@ export class AplicacaoInsulinaService {
       order: { dataHoraAplicacao: 'DESC' },
     });
   }
-
+  /**
+   * Busca as últimas aplicações de insulina de um usuário.
+   * @param usuarioId ID do usuário.
+   * @param limite Número máximo de aplicações a serem retornadas.
+   * @returns Lista de últimas aplicações de insulina.
+   */
+  async findUltimasAplicacoes(usuarioId: string, limite: number): Promise<AplicacaoInsulina[]> {
+    return this.aplicacaoInsulinaRepository.find({
+      where: { usuarioId },
+      order: { dataHoraAplicacao: 'DESC' },
+      take: limite,
+      relations: ['insulinaAssociada'],
+    });
+  }
 }

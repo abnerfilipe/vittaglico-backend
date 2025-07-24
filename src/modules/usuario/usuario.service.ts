@@ -79,7 +79,7 @@ export class UsuarioService {
     if (usuario === null)
       throw new NotFoundException('O usuário não foi encontrado.');
   
-    // Atualiza apenas os campos enviados, mantendo os antigos
+    
     for (const key of Object.keys(novosDados)) {
       if (novosDados[key] !== undefined) {
         usuario[key] = novosDados[key];

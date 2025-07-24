@@ -12,8 +12,7 @@ const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [path.join(__dirname, '/../**/*.entity.{js,ts}')],
-  // migrations: [path.join(__dirname, '/migrations/*.{js,ts}')],
-  migrations: [path.join(__dirname, '/migrations/1752970819392-CreateAplicacoesInsulinaTable.ts')],
+  migrations: [path.join(__dirname, '/migrations/*.{js,ts}')],
 };
 
 const dataSource = new DataSource(dataSourceOptions);
