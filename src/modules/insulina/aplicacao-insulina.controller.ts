@@ -111,7 +111,7 @@ export class AplicacaoInsulinaController {
   
     const sugestoes = await this.calculadoraCorrecaoGlicemiaService.obterLocaisRodizioDisponiveis(usuarioId);
     
-    // Adiciona a descrição concatenada a cada sugestão
+    
     return sugestoes.map(sugestao => ({
       ...sugestao,
       descricaoCompleta: `${sugestao.local}${sugestao.quadrante ? ' - ' + sugestao.quadrante : ''} (${sugestao.lado})`,

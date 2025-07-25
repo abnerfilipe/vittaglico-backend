@@ -51,9 +51,9 @@ export class ListAplicacaoInsulinaDto {
  @ApiProperty({ 
     description: 'Quadrante de aplicação da insulina', 
     example: 'Superior Direito',
-    nullable: true // Adicione esta propriedade
+    nullable: true 
   })
-  quadranteAplicacao?: QuadranteAplicacaoInsulina | null; // Atualize o tipo para aceitar null
+  quadranteAplicacao?: QuadranteAplicacaoInsulina | null; 
 
 
   @ApiProperty({ description: 'Descrição completa', example: 'Aplicação de insulina no abdome direito, quadrante superior', required: true })

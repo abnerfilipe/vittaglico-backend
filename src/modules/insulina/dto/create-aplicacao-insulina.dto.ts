@@ -25,7 +25,7 @@ export class CreateAplicacaoInsulinaDto {
   @ApiProperty({ description: 'Local de aplicação da insulina', required: false, example: 'Abdome' })
   @Transform(({ value }) => {
     if (typeof value === 'string' && value.includes(' - ')) {
-      // Se o valor contém hífen, extrair o local (primeira parte)
+      
       return value.split(' - ')[0] as LocalAplicacaoInsulina;
     }
     return value;
@@ -36,7 +36,7 @@ export class CreateAplicacaoInsulinaDto {
   @ApiProperty({ description: 'Lado de aplicação da insulina', required: false, example: 'Direito' })
   @Transform(({ value, obj }) => {
     if (typeof obj.localAplicacao === 'string' && obj.localAplicacao.includes('(')) {
-      // Se localAplicacao contém parênteses, extrair o lado (dentro dos parênteses)
+      
       const match = obj.localAplicacao.match(/\(([^)]+)\)/);
       if (match && match[1]) {
         return match[1] as LadoAplicacaoInsulina;
@@ -50,10 +50,10 @@ export class CreateAplicacaoInsulinaDto {
   @ApiProperty({ description: 'Quadrante de aplicação da insulina', required: false, example: 'Superior Direito' })
   @Transform(({ value, obj }) => {
     if (typeof obj.localAplicacao === 'string' && obj.localAplicacao.includes(' - ')) {
-      // Se localAplicacao contém hífen, extrair o quadrante (parte do meio)
+      
       const parts = obj.localAplicacao.split(' - ');
       if (parts.length > 1) {
-        // Remover o lado (dentro dos parênteses) do quadrante
+        
         const quadrantePart = parts[1].split(' (')[0];
         return quadrantePart as QuadranteAplicacaoInsulina;
       }

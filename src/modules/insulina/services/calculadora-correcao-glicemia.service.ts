@@ -80,7 +80,7 @@ export class CalculadoraCorrecaoGlicemiaService {
     let glicemiaIdParaSalvar: string | null = null;
 
     if (glicemiaId) {
-      // Busca uma glicemia específica pelo ID
+      
       const glicemiaEspecifica = await this.glicemiaService.buscarPor(usuarioId, { id: glicemiaId });
       if (!glicemiaEspecifica) {
         throw new NotFoundException('Glicemia especificada não foi encontrada.');
@@ -88,12 +88,12 @@ export class CalculadoraCorrecaoGlicemiaService {
       glicemia = glicemiaEspecifica;
       glicemiaIdParaSalvar = glicemiaId;
     } else if (valorGlicemiaAtual !== undefined && valorGlicemiaAtual !== null) {
-      // Usa o valor informado de glicemia atual
+      
       glicemia = new Glicemia();
       glicemia.valor = valorGlicemiaAtual;
       glicemia.usuarioId = usuarioId;
     } else {
-      // Busca a última glicemia registrada do usuário
+      
       const ultimaGlicemia = await this.glicemiaService.buscarUltimaGlicemia(usuarioId);
       if (!ultimaGlicemia) {
         throw new Error('Nenhuma glicemia registrada para calcular o bolus.');
@@ -120,16 +120,16 @@ export class CalculadoraCorrecaoGlicemiaService {
       return { bolus: 0, message: 'Nenhuma correção necessária.' };
     }
 
-    // Calcula a quantidade bruta de insulina para correção
+    
     const correcaoBruta = (glicoseAtual - glicoseAlvo) / fsi;
 
-    // Busca aplicações recentes para calcular insulina ativa
+    
     const dataHoraAtual = new Date();
     const aplicacoesRecentes = await this.aplicacaoInsulinaService.findAtivasByUsuarioId(usuarioId, dataHoraAtual);
 
     const insulinaAtiva = this.calcularInsulinaAtiva(aplicacoesRecentes, dataHoraAtual);
 
-    // Ajusta o bolus considerando insulina ativa
+    
     let bolusFinal = correcaoBruta - insulinaAtiva;
 
     let message = '';
@@ -178,9 +178,9 @@ async obterLocaisRodizioDisponiveis(usuarioId: string): Promise<SugestaoLocalRod
 
     const pontosUsadosRecentemente = new Map<string, Date>();
     for (const aplicacao of ultimasAplicacoes) {
-      // Se 'quadranteAplicacao' puder vir como null do banco, ajuste a chave aqui também.
-      // Agora, como não retornaremos null, assumimos que no banco ele será um valor ou undefined.
-      const key = `${aplicacao.localAplicacao}-${aplicacao.ladoAplicacao}-${aplicacao.quadranteAplicacao || 'NÃO_DEFINIDO'}`; // Use uma string placeholder se ele puder ser null no banco
+      
+      
+      const key = `${aplicacao.localAplicacao}-${aplicacao.ladoAplicacao}-${aplicacao.quadranteAplicacao || 'NÃO_DEFINIDO'}`; 
       const dataAtualAplicacaoDate = new Date(aplicacao.dataHoraAplicacao);
 
       if (!pontosUsadosRecentemente.has(key) || dataAtualAplicacaoDate > pontosUsadosRecentemente.get(key)!) {
@@ -200,9 +200,9 @@ async obterLocaisRodizioDisponiveis(usuarioId: string): Promise<SugestaoLocalRod
       for (const ladoKey of Object.values(LadoAplicacaoInsulina)) {
         const quadrantesValidos = ladosDoLocal[ladoKey];
 
-        if (quadrantesValidos && quadrantesValidos.length > 0) { // Verifica se há quadrantes válidos para essa combinação
+        if (quadrantesValidos && quadrantesValidos.length > 0) { 
           for (const quadrante of quadrantesValidos) {
-            const key = `${localKey}-${ladoKey}-${quadrante}`; // A chave não precisa mais de '|| nulo'
+            const key = `${localKey}-${ladoKey}-${quadrante}`; 
             const dataUso = pontosUsadosRecentemente.get(key);
 
             const sugestao: SugestaoLocalRodizio = {
@@ -224,7 +224,7 @@ async obterLocaisRodizioDisponiveis(usuarioId: string): Promise<SugestaoLocalRod
 
     locaisDisponiveisOrdenados.sort((a, b) => {
       const dateA = a.ultimoUso ? a.ultimoUso.getTime() : 0;
-      const dateB = b.ultimoUso ? b.ultimoUso.getTime() : 0; // Correção aqui: 'b.ultimoBuso' para 'b.ultimoUso'
+      const dateB = b.ultimoUso ? b.ultimoUso.getTime() : 0; 
       return dateA - dateB;
     });
 
@@ -239,7 +239,7 @@ async obterLocaisRodizioDisponiveis(usuarioId: string): Promise<SugestaoLocalRod
     }
 
     console.warn("[Rodízio Insulina] Nenhum local disponível ou histórico encontrado para os padrões definidos. Retornando uma sugestão padrão.");
-    // Fallback agora retorna um quadrante específico, não null
+    
     return [{
       local: LocalAplicacaoInsulina.ABDOME,
       lado: LadoAplicacaoInsulina.DIREITO,

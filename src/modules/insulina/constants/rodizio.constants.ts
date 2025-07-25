@@ -4,19 +4,19 @@ import { QuadranteAplicacaoInsulina } from "../enum/quadranteAplicacaoInsulina.e
 
 export const LOCAL_QUADRANTE_MAP:  {
   [key in LocalAplicacaoInsulina]: {
-    [key2 in LadoAplicacaoInsulina]: QuadranteAplicacaoInsulina[]; // Array de quadrantes, sem 'null'
+    [key2 in LadoAplicacaoInsulina]: QuadranteAplicacaoInsulina[]; 
   };
 } = {
   [LocalAplicacaoInsulina.ABDOME]: {
     [LadoAplicacaoInsulina.DIREITO]: [
       QuadranteAplicacaoInsulina.SUPERIOR_DIREITO,
       QuadranteAplicacaoInsulina.INFERIOR_DIREITO,
-      QuadranteAplicacaoInsulina.CENTRAL, // Central pode ser usado em ambos os lados do abdome
+      QuadranteAplicacaoInsulina.CENTRAL, 
     ],
     [LadoAplicacaoInsulina.ESQUERDO]: [
       QuadranteAplicacaoInsulina.SUPERIOR_ESQUERDO,
       QuadranteAplicacaoInsulina.INFERIOR_ESQUERDO,
-      QuadranteAplicacaoInsulina.CENTRAL, // Central pode ser usado em ambos os lados do abdome
+      QuadranteAplicacaoInsulina.CENTRAL, 
     ],
   },
 [LocalAplicacaoInsulina.BRACO]: {
