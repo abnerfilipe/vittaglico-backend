@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TipoInsulinaEnum } from '../enum/tipoInsulina.enum';
 import { Transform } from 'class-transformer';
 import { Insulina } from '../entities/insulina.entity';
+import type { QuadranteAplicacaoInsulina } from '../enum/quadranteAplicacaoInsulina.enum';
 
 export class ListAplicacaoInsulinaDto {
   @ApiProperty({ description: 'ID da aplicação de insulina', example: 'uuid' })
@@ -40,4 +41,21 @@ export class ListAplicacaoInsulinaDto {
 
   @ApiProperty({ description: 'Insulina associada', type: Insulina, required: false })
   insulinaAssociada: Insulina;
+
+  @ApiProperty({ description: 'Local de aplicação', example: 'Abdome', required: true })
+  localAplicacao: string;
+
+  @ApiProperty({ description: 'Lado de aplicação', example: 'Direito', required: true })
+  ladoAplicacao: string;
+
+ @ApiProperty({ 
+    description: 'Quadrante de aplicação da insulina', 
+    example: 'Superior Direito',
+    nullable: true // Adicione esta propriedade
+  })
+  quadranteAplicacao?: QuadranteAplicacaoInsulina | null; // Atualize o tipo para aceitar null
+
+
+  @ApiProperty({ description: 'Descrição completa', example: 'Aplicação de insulina no abdome direito, quadrante superior', required: true })
+  descricaoCompleta: string;
 }

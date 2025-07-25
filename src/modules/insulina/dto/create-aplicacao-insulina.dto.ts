@@ -1,37 +1,65 @@
-
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, isString } from 'class-validator';
 import { LadoAplicacaoInsulina } from '../enum/ladoAplicacaoInsulina.enum';
 import { LocalAplicacaoInsulina } from '../enum/localAplicacaoInsulina.enum';
 import { QuadranteAplicacaoInsulina } from '../enum/quadranteAplicacaoInsulina.enum';
+import { Transform } from 'class-transformer';
 
 export class CreateAplicacaoInsulinaDto {
-  @ApiProperty({ description: 'Quantidade de unidades aplicadas', example: 12 })
-  @IsNotEmpty({ message: 'A quantidade de unidades não pode ser vazia' })
-  @IsNumber()
-  quantidadeUnidades: number;
-
-  @ApiProperty({ description: 'Data e hora da aplicação', example: '22/07/2025 19:30:00' })
-  @IsString({ message: 'A data e hora da aplicação deve ser uma string no formato DD/MM/YYYY HH:mm:ss' })
-  @IsNotEmpty({ message: 'A data e hora da aplicação não pode ser vazia' })
-  dataHoraAplicacao: string;
-
-  @ApiProperty({ description: 'ID do usuário', example: 'uuid' })
-  @IsUUID()
+  @ApiProperty({ description: 'ID do usuário que aplicou a insulina' })
+  @IsNotEmpty({ message: 'O ID do usuário não pode ser vazio' })
   usuarioId: string;
 
-  @ApiProperty({ description: 'ID da insulina associada', example: 'uuid', required: true })
-  @IsUUID()
+  @ApiProperty({ description: 'Quantidade de unidades de insulina aplicada' })
+  @IsNotEmpty({ message: 'A quantidade de unidades não pode ser vazia' })
+  quantidadeUnidades: number;
+
+  @ApiProperty({ description: 'ID da insulina associada à aplicação' })
+  @IsNotEmpty({ message: 'O ID da insulina não pode ser vazio' })
   insulinaId: string;
 
+  @ApiProperty({ description: 'Data e hora da aplicação da insulina' })
+  @IsNotEmpty({ message: 'A data e hora da aplicação não podem ser vazias' })
+  dataHoraAplicacao: string;
 
-  @IsIn(Object.values(LocalAplicacaoInsulina)) 
+  @ApiProperty({ description: 'Local de aplicação da insulina', required: false, example: 'Abdome' })
+  @Transform(({ value }) => {
+    if (typeof value === 'string' && value.includes(' - ')) {
+      // Se o valor contém hífen, extrair o local (primeira parte)
+      return value.split(' - ')[0] as LocalAplicacaoInsulina;
+    }
+    return value;
+  })
+  @IsString({ message: 'O local de aplicação deve ser uma string válida' })
   localAplicacao: LocalAplicacaoInsulina;
 
-  @IsIn(Object.values(LadoAplicacaoInsulina))
+  @ApiProperty({ description: 'Lado de aplicação da insulina', required: false, example: 'Direito' })
+  @Transform(({ value, obj }) => {
+    if (typeof obj.localAplicacao === 'string' && obj.localAplicacao.includes('(')) {
+      // Se localAplicacao contém parênteses, extrair o lado (dentro dos parênteses)
+      const match = obj.localAplicacao.match(/\(([^)]+)\)/);
+      if (match && match[1]) {
+        return match[1] as LadoAplicacaoInsulina;
+      }
+    }
+    return value;
+  })
+  @IsString({ message: 'O lado de aplicação deve ser uma string válida' })
   ladoAplicacao: LadoAplicacaoInsulina;
 
-  @IsIn(Object.values(QuadranteAplicacaoInsulina))
-  @IsOptional()
-  quadranteAplicacao?: QuadranteAplicacaoInsulina;
+  @ApiProperty({ description: 'Quadrante de aplicação da insulina', required: false, example: 'Superior Direito' })
+  @Transform(({ value, obj }) => {
+    if (typeof obj.localAplicacao === 'string' && obj.localAplicacao.includes(' - ')) {
+      // Se localAplicacao contém hífen, extrair o quadrante (parte do meio)
+      const parts = obj.localAplicacao.split(' - ');
+      if (parts.length > 1) {
+        // Remover o lado (dentro dos parênteses) do quadrante
+        const quadrantePart = parts[1].split(' (')[0];
+        return quadrantePart as QuadranteAplicacaoInsulina;
+      }
+    }
+    return value;
+  })
+  @IsString({ message: 'O quadrante de aplicação deve ser uma string válida' })
+  quadranteAplicacao: QuadranteAplicacaoInsulina;
 }

@@ -108,8 +108,14 @@ export class AplicacaoInsulinaController {
     if (!usuarioId) {
       throw new NotFoundException('Usuário autenticado não encontrado.');
     }
-
-    return this.calculadoraCorrecaoGlicemiaService.obterLocaisRodizioDisponiveis(usuarioId);
+  
+    const sugestoes = await this.calculadoraCorrecaoGlicemiaService.obterLocaisRodizioDisponiveis(usuarioId);
+    
+    // Adiciona a descrição concatenada a cada sugestão
+    return sugestoes.map(sugestao => ({
+      ...sugestao,
+      descricaoCompleta: `${sugestao.local}${sugestao.quadrante ? ' - ' + sugestao.quadrante : ''} (${sugestao.lado})`,
+    }));
   }
 
   @Patch(':id')
@@ -142,6 +148,10 @@ export class AplicacaoInsulinaController {
       picoAcaoHoras: aplicacao.insulinaAssociada?.picoAcaoHoras ?? undefined,
       insulinaAssociada: aplicacao.insulinaAssociada,
       dataHoraAplicacao: this.formatDate(aplicacao.dataHoraAplicacao, 'dd/MM/yyyy HH:mm'),
+      localAplicacao: aplicacao.localAplicacao,
+      ladoAplicacao: aplicacao.ladoAplicacao,
+      quadranteAplicacao: aplicacao.quadranteAplicacao || undefined,
+      descricaoCompleta: `${aplicacao.localAplicacao}${aplicacao.quadranteAplicacao ? ' - ' + aplicacao.quadranteAplicacao : ''} (${aplicacao.ladoAplicacao})`,
       createdAt: this.formatDate(aplicacao.createdAt, 'dd/MM/yyyy HH:mm'),
       updatedAt: this.formatDate(aplicacao.updatedAt, 'dd/MM/yyyy HH:mm'),
     };

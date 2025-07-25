@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import type { LadoAplicacaoInsulina } from "../enum/ladoAplicacaoInsulina.enum";
 import type { LocalAplicacaoInsulina } from "../enum/localAplicacaoInsulina.enum";
 import type { QuadranteAplicacaoInsulina } from "../enum/quadranteAplicacaoInsulina.enum";
+import { IsOptional } from 'class-validator';
 
 export class SugestaoLocalRodizioResponseDto {
   @ApiProperty({ description: 'Local sugerido para aplicação de insulina', example: 'abdome', enum: ['abdome', 'braco', 'coxa', 'nadega'] })
@@ -14,5 +15,9 @@ export class SugestaoLocalRodizioResponseDto {
   quadrante: QuadranteAplicacaoInsulina | null;
 
   @ApiProperty({ description: 'Data do último uso deste local/lado/quadrante', example: '2025-07-22T19:30:00Z', required: false, nullable: true, type: String })
+  @IsOptional()
   ultimoUso?: Date;
+    
+  @ApiProperty({ description: 'Descrição completa do local sugerido', example: 'Abdome - Superior Direito (Direito)' })
+  descricaoCompleta: string;
 }
