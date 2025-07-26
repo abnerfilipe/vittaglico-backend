@@ -12,7 +12,7 @@ async function bootstrap() {
     new FastifyAdapter()
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  
+
   const config = new DocumentBuilder()
     .setTitle('Vittaglico API')
     .setDescription(`
@@ -35,7 +35,7 @@ async function bootstrap() {
         description: 'Insira seu token JWT',
         in: 'header'
       },
-      'bearer' 
+      'bearer'
     )
     .build();
 
@@ -62,12 +62,12 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
   app.enableCors({
-    origin: true, 
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'DNT', 'User-Agent', 'sec-ch-ua', 'sec-ch-ua-platform', 'sec-ch-ua-mobile', 'Referer'],
     credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000,'0.0.0.0');
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
   console.log(`Aplicação rodando em: ${await app.getUrl()}`);
 }
 bootstrap();
