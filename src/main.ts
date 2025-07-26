@@ -25,7 +25,7 @@ async function bootstrap() {
     .addTag('usuario', 'Endpoints relacionados ao gerenciamento de usuários')
     .addTag('glicemia', 'Endpoints relacionados ao gerenciamento de glicemia')
     .addTag('insulina', 'Endpoints relacionados ao gerenciamento de insulina')
-    .addTag('aplicacao-insulina', 'Endpoints relacionados ao gerenciamento de aplicações de insulina e calculo de correcoes de bolus')
+    .addTag('aplicacao-insulina', 'Endpoints relacionados ao gerenciamento de aplicações de insulina, sugestão de rodízio de local de aplicação e cálculo de correções de bolus')
     .addBearerAuth(
       {
         type: 'http',
