@@ -49,8 +49,7 @@ async function bootstrap() {
       filter: true,
       deepLinking: true,
     },
-    customSiteTitle: 'Vittaglico API - Documentação',
-    customfavIcon: 'https://vittaglico.com.br/favicon.ico',
+    customSiteTitle: 'Vittaglico API - API Documentação',
     jsonDocumentUrl: 'swagger/json',
   });
 
