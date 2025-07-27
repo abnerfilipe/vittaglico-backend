@@ -1,7 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class CreateInsulinasTable1678886400000 implements MigrationInterface {
+export class CreateInsulinasTable1752970805155 implements MigrationInterface {
+
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TYPE "public"."insulinas_tipo_basal_correcao_enum" AS ENUM('Correção', 'Basal')`);
+
         await queryRunner.createTable(
             new Table({
                 name: 'insulinas',
@@ -21,8 +24,8 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
                     {
                         name: 'tipo_basal_correcao',
                         type: 'enum',
-                        enum: ['Correção', 'Basal'],
-                        default: "'Correção'",
+                        enumName: 'insulinas_tipo_basal_correcao_enum',
+                        default: `'Correção'`,
                         isNullable: false,
                     },
                     {
@@ -57,23 +60,32 @@ export class CreateInsulinasTable1678886400000 implements MigrationInterface {
                     },
                 ],
             }),
-            true,
+            true
         );
 
         await queryRunner.createForeignKey(
             'insulinas',
             new TableForeignKey({
-                name: 'fk_insulina_usuario', 
                 columnNames: ['usuario_id'],
                 referencedColumnNames: ['id'],
                 referencedTableName: 'usuarios',
                 onDelete: 'CASCADE',
-            }),
+            })
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        
-        await queryRunner.query('DROP TABLE IF EXISTS insulinas CASCADE');
+        const table = await queryRunner.getTable('insulinas');
+        if (table) {
+            const foreignKey = table.foreignKeys.find(
+                fk => fk.columnNames.includes('usuario_id')
+            );
+            if (foreignKey) {
+                await queryRunner.dropForeignKey('insulinas', foreignKey);
+            }
+        }
+        await queryRunner.query(`DROP TYPE "public"."insulinas_tipo_basal_correcao_enum"`);
+        await queryRunner.dropTable('insulinas');
     }
+
 }

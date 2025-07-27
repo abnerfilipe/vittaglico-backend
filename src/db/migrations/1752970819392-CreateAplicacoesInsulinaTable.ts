@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class CreateAplicacoesInsulinaTable1678886500000 implements MigrationInterface {
+export class CreateAplicacoesInsulinaTable1752970819392 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
