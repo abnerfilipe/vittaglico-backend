@@ -1,0 +1,31 @@
+# Use a imagem base do Node.js
+FROM node:18-alpine AS builder
+
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copia os arquivos package.json e package-lock.json
+COPY package*.json ./
+
+# Instala as dependências
+RUN npm install
+
+# Copia o código fonte da aplicação
+COPY . .
+
+# Build a aplicação NestJS
+RUN npm run build
+
+# Use uma imagem base mais leve para a produção
+FROM node:18-alpine AS production
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia apenas os arquivos necessários da fase de build
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Define o comando para iniciar a aplicação
+CMD [ "node", "dist/main.js" ]
